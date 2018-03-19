@@ -2,16 +2,17 @@ pragma solidity ^0.4.17;
 
 contract PHRManager {
     
-    struct userACL{
+    struct UserACL {
         mapping(string => string) myFiles;  //[file address, MyPub(SharedKey)]
         mapping (address => mapping (string => string))  sharedFiles; //[RecieverPub: [file address, RecieverPub(SharedKey)]]
     }
+      
+    event FileAdded(address fileAddress, string fileSecret); 
+    event AccessAdded(address fileAddress, string fileSecret);
     
-    event FileAdded(address, string); 
-    event AccessAdded(address, string);
 
     address  contractOwner; 
-    mapping(address => userACL) acls; //[UserPub: his ACL]
+    mapping(address => UserACL) acls; //[UserPub: his ACL]
     
     function PHRManager() public {
         contractOwner = msg.sender;
@@ -24,11 +25,10 @@ contract PHRManager {
         acls[msg.sender].myFiles[_fileAddress] = _encryptedKey;
         
         contractOwner.transfer(fees);
-        if(msg.value > fees)
+        if (msg.value > fees)
             msg.sender.transfer(msg.value - fees);
-            
-        emit FileAdded(msg.sender, _fileAddress);
-        
+
+        FileAdded(msg.sender,  _fileAddress);            
     }
 
     function getMyFileAccess(string _fileAddress) public view returns(string){
@@ -42,10 +42,10 @@ contract PHRManager {
         acls[msg.sender].sharedFiles[_reciever][_fileAddress] = _encryptedKey;
 
         contractOwner.transfer(fees);
-        if(msg.value > fees)
+        if (msg.value > fees)
             msg.sender.transfer(msg.value - fees);
         
-        emit AccessAdded(_reciever, _fileAddress);
+        AccessAdded(_reciever, _fileAddress);
     }
 
     function getFileAccess(address _filecontractOwner, string _fileAddress) public view returns(string){
