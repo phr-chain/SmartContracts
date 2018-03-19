@@ -284,4 +284,5 @@ paket-files/
 *.pidb
 *.resources
 test-results/
-Source/BackEnd/package-lock.json
+Source/Smart Contracts/package-lock.json
+Source/Smart Contracts/build
