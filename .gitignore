@@ -284,3 +284,4 @@ paket-files/
 *.pidb
 *.resources
 test-results/
+Source/BackEnd/package-lock.json
