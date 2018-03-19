@@ -18,11 +18,11 @@ contract PHRManager {
         contractOwner = msg.sender;
     }
     
-    function addFileAccess(string _fileAddress, string _encryptedKey) public payable{
+    function addFileAccess(string _fileAddress, string _encryptedsharedkey) public payable{
         uint fees = 0.5 ether;
         require(msg.value > fees);
             
-        acls[msg.sender].myFiles[_fileAddress] = _encryptedKey;
+        acls[msg.sender].myFiles[_fileAddress] = _encryptedsharedkey;
         
         contractOwner.transfer(fees);
         if (msg.value > fees)
@@ -35,11 +35,11 @@ contract PHRManager {
         return acls[msg.sender].myFiles[_fileAddress];
     }
     
-    function giveAccess(address _reciever, string _fileAddress, string _encryptedKey) public payable{
+    function giveAccess(address _reciever, string _fileAddress, string _encryptedsharedkey) public payable{
         uint fees = 0.1 ether;
         require(msg.value > fees);
         
-        acls[msg.sender].sharedFiles[_reciever][_fileAddress] = _encryptedKey;
+        acls[msg.sender].sharedFiles[_reciever][_fileAddress] = _encryptedsharedkey;
 
         contractOwner.transfer(fees);
         if (msg.value > fees)
