@@ -1,7 +1,3 @@
-//TODO
-export function encryptFile(){
-}
-
 export function generateSharedKey(){
      return "SharedKey";
 }
