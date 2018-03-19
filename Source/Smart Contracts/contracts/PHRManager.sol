@@ -48,8 +48,8 @@ contract PHRManager {
         AccessAdded(_reciever, _fileAddress);
     }
 
-    function getFileAccess(address _filecontractOwner, string _fileAddress) public view returns(string){
-        return acls[_filecontractOwner].sharedFiles[msg.sender][_fileAddress];
+    function getFileAccess(address _fileOwner, string _fileAddress) public view returns(string){
+        return acls[_fileOwner].sharedFiles[msg.sender][_fileAddress];
     }
     
     function() public payable{

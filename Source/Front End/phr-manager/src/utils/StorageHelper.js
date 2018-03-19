@@ -1,5 +1,5 @@
-export function UploadFile(file){
-     return "file address";
+export function uploadFile(file){
+    return "file address";
 }
 
 export function downloadFile(fileAddress){

@@ -6,7 +6,7 @@ window.addEventListener('load', function () {
     } else {
        // window.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/"));
        // window.web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io"));
-       // window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     }
 }) 
 
