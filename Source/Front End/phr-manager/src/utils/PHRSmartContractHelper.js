@@ -140,18 +140,18 @@ export function getMyFileAccess(fileAddress) {
 }
 
 export function giveAccess(reciever, fileAddress, encryptedsharedkey) {
-    var fees = web3.toWei(0.5)
-    phrContract.giveAccess(reciever, fileAddress, encryptedsharedkey,{ value: fees , gas: 300000 }, (error, res) => {
-        if(error)
-            throw error;
-      });
+    // var fees = web3.toWei(0.5)
+    // phrContract.giveAccess(reciever, fileAddress, encryptedsharedkey,{ value: fees , gas: 300000 }, (error, res) => {
+    //     if(error)
+    //         throw error;
+    //   });
 }
 
 export function getFileAccess(fileOwner, fileAddress) {
-    ratingContract.balanceOf((add), (error, res) => {
-        if(error)
-            throw error;
+    // ratingContract.balanceOf((add), (error, res) => {
+    //     if(error)
+    //         throw error;
 
-        return res;
-      });
+    //     return res;
+    //   });
 }
