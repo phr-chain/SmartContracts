@@ -43,7 +43,7 @@ export function shareFile(aclJson, recieverPubKey, fileAddress, encryptedsharedk
     })
 }
 
-export function getMyFileAccess(aclJson, fileAddress) { //returns(string
+export function getMyFileAccess(aclJson, fileAddress) {
     var files = aclJson.acl.files;
     if (!files)
         return null;
@@ -51,7 +51,7 @@ export function getMyFileAccess(aclJson, fileAddress) { //returns(string
     return files.filter(file => file.fileAddress === fileAddress)[0];
 }
 
-export function getSharedFileAccess(aclJson, fileAddress, recieverPubKey) { //returns(string)
+export function getSharedFileAccess(aclJson, fileAddress, recieverPubKey) {
     var files = aclJson.acl.shares[recieverPubKey];
     if (!files)
         return null;
