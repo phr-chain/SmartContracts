@@ -6,24 +6,48 @@ import * as EncryptionHelper from '../utils/EncryptionHelper'
 import * as StorageHelper from '../utils/StorageHelper'
 import * as PHRHelper from '../utils/PHRSmartContractHelper'
 import * as EthHelper from '../utils/EtherumHelper'
+import * as FileSaver from 'file-saver';
+const CryptoJS = require("crypto-js");
 
 class PatientViewer extends Component {
     uploadFile = (e) => {
-
-        debugger;
         var reader = new FileReader();
-        reader.readAsText(e.target.files[0]);
-        var plainFile = reader.result;
-        
-        var sKey = EncryptionHelper.generateSharedKey();
-        var encryptedFile = EncryptionHelper.encrypt(plainFile, sKey);
-        var fileAddress = StorageHelper.uploadFile(encryptedFile);
+        var file = e.target.files[0];
 
-        var pubKey = EthHelper.getCurrentAccount();
-        var encryptedSharedKey =  EncryptionHelper.encrypt(sKey, pubKey);
-        PHRHelper.addFileAccess(fileAddress, encryptedSharedKey);
+        // Closure to capture the file information.
+        reader.onload = (function(file) {
+            return function(evt) {
+                var fileAsUtf8Text = reader.result;
+                var fileName = file.name;
+                var symmetricKey = EncryptionHelper.generateSharedKey();
+                var encryptedText = EncryptionHelper.encrypt(fileAsUtf8Text, symmetricKey);
+                var original = EncryptionHelper.decrypt(encryptedText, symmetricKey);
+                // var blob = new Blob([original], {type: "text/plain;charset=utf-8"});
+                // FileSaver.saveAs(blob, "encrypted-hello.txt");
+                var new_file = new File([original], "encrypted-world.txt", {type: "text/plain;charset=utf-8"});
+                try{
+                    FileSaver.saveAs(new_file);
+                } catch(e){
+                    console.log("11111111111", e);
+                }
+                try{
+                    window.saveAs(new_file);
+                } catch(e){
+                    console.log("222222222222", e);
+                }
+                console.log("original", original);
+                
+                // var blob1 = new Blob([byteArray], {type: "application/octet-stream"});
+                //var fileAddress = StorageHelper.uploadFile(encryptedFile);
 
-        //var fileName = e.target.files[0].name;
+
+
+                // var pubKey = EthHelper.getCurrentAccount();
+                // var encryptedSharedKey =  EncryptionHelper.encrypt(symmetricKey, pubKey);
+                //PHRHelper.addFileAccess(fileAddress, encryptedSharedKey);
+            };
+        })(file);
+        reader.readAsText(file);
     }
 
     render() {
