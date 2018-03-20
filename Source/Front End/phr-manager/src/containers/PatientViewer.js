@@ -17,16 +17,21 @@ class PatientViewer extends Component {
         var sKey = EncryptionHelper.generateSharedKey();
         var encryptedFile = EncryptionHelper.encrypt(plainFile, sKey);
         var fileAddress = StorageHelper.uploadFile(encryptedFile);
-
-        var pubKey = EthHelper.getCurrentAccount();
-        var encryptedSharedKey = EncryptionHelper.encrypt(sKey, pubKey);
-        PHRHelper.addFileAccess(fileAddress, encryptedSharedKey);
+        
+        // var aclFile = PHRHelper.getACLFileAddress(this.props.myPublicKey, (error, res) => {
+        //     if(res != null || res != '')
+            
+        //   });
+  
+        // PHRHelper.addACLFileAddress(this.props.myPublicKey, fileAddress, (error, res) => {
+            
+        //   });
 
         //var fileName = e.target.files[0].name;
     }
 
     render() {
-        ACLHelper.test();
+        //ACLHelper.test();
         return (
             <input type="file" onChange={this.uploadFile} />
         );

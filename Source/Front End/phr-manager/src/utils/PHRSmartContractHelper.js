@@ -1,157 +1,81 @@
 import * as EthHelper from './EtherumHelper'
 
 var abi = [
-    {
-      "inputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
-      "payable": true,
-      "stateMutability": "payable",
-      "type": "fallback"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "name": "fileAddress",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "fileSecret",
-          "type": "string"
-        }
-      ],
-      "name": "FileAdded",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "name": "fileAddress",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "fileSecret",
-          "type": "string"
-        }
-      ],
-      "name": "AccessAdded",
-      "type": "event"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_fileAddress",
-          "type": "string"
-        },
-        {
-          "name": "_encryptedsharedkey",
-          "type": "string"
-        }
-      ],
-      "name": "addFileAccess",
-      "outputs": [],
-      "payable": true,
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "_fileAddress",
-          "type": "string"
-        }
-      ],
-      "name": "getMyFileAccess",
-      "outputs": [
-        {
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_reciever",
-          "type": "address"
-        },
-        {
-          "name": "_fileAddress",
-          "type": "string"
-        },
-        {
-          "name": "_encryptedsharedkey",
-          "type": "string"
-        }
-      ],
-      "name": "giveAccess",
-      "outputs": [],
-      "payable": true,
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "_fileOwner",
-          "type": "address"
-        },
-        {
-          "name": "_fileAddress",
-          "type": "string"
-        }
-      ],
-      "name": "getFileAccess",
-      "outputs": [
-        {
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }
-  ];
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "fileOwner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "fileAddress",
+        "type": "address"
+      }
+    ],
+    "name": "FileAdded",
+    "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_fileOwner",
+        "type": "address"
+      },
+      {
+        "name": "_fileAddress",
+        "type": "address"
+      }
+    ],
+    "name": "addACLFileAddress",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_fileOwner",
+        "type": "address"
+      }
+    ],
+    "name": "getACLFileAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
 var address = '0x';
 var phrContract = EthHelper.getContract(abi, address);
 
-export function addFileAccess(fileAddress, encryptedsharedkey) {
+
+function addACLFileAddress(fileOwner, fileAddress, callBack) {
+  var fees = window.web3.toWei(0.05, 'ether');
+  phrContract.addACLFileAddress(fileOwner, fileAddress, { value: fees, gas: 500000 }, callBack);
 }
 
-export function getMyFileAccess(fileAddress) {
-    return "string";
-}
-
-export function giveAccess(reciever, fileAddress, encryptedsharedkey) {
-    // var fees = web3.toWei(0.5)
-    // phrContract.giveAccess(reciever, fileAddress, encryptedsharedkey,{ value: fees , gas: 300000 }, (error, res) => {
-    //     if(error)
-    //         throw error;
-    //   });
-}
-
-export function getFileAccess(fileOwner, fileAddress) {
-    // ratingContract.balanceOf((add), (error, res) => {
-    //     if(error)
-    //         throw error;
-
-    //     return res;
-    //   });
+function getACLFileAddress(fileOwner, callBack) {
+  phrContract.getACLFileAddress(fileOwner, callBack);
 }
