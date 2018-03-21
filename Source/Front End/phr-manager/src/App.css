@@ -1,11 +1,68 @@
-.App {
-  text-align: center;
-  background-color: #75c0d1;
-  height: 100%;
-  position: relative;
+
+.login-container {
+  margin-top: 20px;
+  margin-left: 20px;
+  
+  /* position: absolute;
+  margin-left: 20x; */
+  /* background-color: #75c0d1;
+  display: flex;
+  justify-content: center; */
+  /* align-items: center;  */
+  
 }
 
-.App-logo {
+.btn-common {
+  text-align: center;
+  color: white;
+  font-size: 24pt;
+  /*margin-left: 25%;
+   margin-top: 20%; */
+  
+  height: 130px;
+  width: 340px;
+  /* border-radius: 1em; */
+  border-width: 5;
+  cursor: pointer;
+
+}
+
+
+.btn-login {
+  background-color: rgb(219, 21, 125);
+  border-color: rgb(131, 9, 73);
+}
+
+
+.btn-createaccount {
+  margin-left: 140px;
+  background-color: rgb(233,148, 58);
+  border-color: rgb(203, 128, 49);
+  
+}
+
+.btn-generatePubKey {
+  background-color: white;
+  height: 60px;
+  /* border-radius: 0.5em; */
+  margin-left: 10px;
+
+}
+
+.input-common {
+  font-size: 24pt;
+  align-self: center;
+  /* margin-top: 20%; */
+
+ 
+  height: 60px;
+  width: 70%;
+  /* border-radius: 0.5em; */
+  border-width: 5;
+
+  padding: 10x;
+}
+/* .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
 }
@@ -28,4 +85,4 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
+} */

@@ -54,3 +54,14 @@ export function decryptAsString(encryptedText, symmetricKey){
     var str = wordArray.toString();
     return str;
 }
+
+export function generatePubKey(privteKey){
+    return "public key";
+}
+
+export function generatePubPrivateKeys(){
+    return  {
+        publicKey: '0xpublicKey',
+        privateKey: '0xprivateKey',
+    };
+}

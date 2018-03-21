@@ -42,7 +42,7 @@ class PatientViewer extends Component {
     }
 
     render() {
-        ACLHelper.test();
+        //ACLHelper.test();
         return (
             <input type="file" onChange={this.uploadFile} />
         );
