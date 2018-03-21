@@ -18,15 +18,18 @@ class PatientViewer extends Component {
         // Closure to capture the file information.
         reader.onload = (function(file) {
             return function(evt) {
-                var fileAsUtf8Text = reader.result;
                 var fileName = file.name;
                 var fileType = file.type;
+                var fileLength = file.size;
+
                 var symmetricKey = EncryptionHelper.generateSharedKey();
-                var encryptedText = EncryptionHelper.encrypt(fileAsUtf8Text, symmetricKey);
-                var decrypted = EncryptionHelper.decrypt(encryptedText, symmetricKey);
-                var blob = new Blob([decrypted], {type: fileType});
+
+                var arrayBuffer = reader.result;
+                var cipher = EncryptionHelper.encrypt(arrayBuffer, symmetricKey);
+                var decryptedByteArray = EncryptionHelper.decrypt(cipher, symmetricKey, fileLength);
+                var blob = new Blob([decryptedByteArray], {type: fileType}).slice(0, fileLength);
                 saveAs(blob, 'decrypted-'+fileName)
-                
+
                 // var blob1 = new Blob([byteArray], {type: "application/octet-stream"});
                 //var fileAddress = StorageHelper.uploadFile(encryptedFile);
                 
@@ -35,7 +38,7 @@ class PatientViewer extends Component {
                 //PHRHelper.addFileAccess(fileAddress, encryptedSharedKey);
             };
         })(file);
-        reader.readAsText(file);
+        reader.readAsArrayBuffer(file);
     }
 
     render() {
