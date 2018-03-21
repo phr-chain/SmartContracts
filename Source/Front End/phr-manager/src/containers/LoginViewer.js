@@ -19,6 +19,7 @@ class LoginViewer extends Component {
             CommonHelper.notify("Enter  public and private keys")
             return;
         }
+        this.props.onLogin();
     }
     createAccount() {
         var keys = EncryptionHelper.generatePubPrivateKeys();
