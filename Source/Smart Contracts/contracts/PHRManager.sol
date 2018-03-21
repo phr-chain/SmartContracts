@@ -12,17 +12,17 @@ contract PHRManager {
         contractOwner = msg.sender;
     }
     
-    function addACLFileAddress(address _fileOwner, address _fileAddress) public payable {
+    function setACLFileAddress( address _fileAddress) public payable {
         uint fees = 0.05 ether;
         require(msg.value > fees);
             
-        acls[_fileOwner] = _fileAddress;
+        acls[msg.sender] = _fileAddress;
         
         contractOwner.transfer(fees);
         if (msg.value > fees)
             msg.sender.transfer(msg.value - fees);
 
-        FileAdded(_fileOwner,  _fileAddress);            
+        FileAdded(msg.sender,  _fileAddress);            
     }
 
     function getACLFileAddress(address _fileOwner) public view returns(address) {

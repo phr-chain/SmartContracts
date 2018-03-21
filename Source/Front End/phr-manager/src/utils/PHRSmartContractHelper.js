@@ -33,15 +33,11 @@ var abi = [
     "constant": false,
     "inputs": [
       {
-        "name": "_fileOwner",
-        "type": "address"
-      },
-      {
         "name": "_fileAddress",
         "type": "address"
       }
     ],
-    "name": "addACLFileAddress",
+    "name": "setACLFileAddress",
     "outputs": [],
     "payable": true,
     "stateMutability": "payable",
@@ -71,9 +67,9 @@ var address = '0x';
 var phrContract = EthHelper.getContract(abi, address);
 
 
-function addACLFileAddress(fileOwner, fileAddress, callBack) {
+function setACLFileAddress(fileAddress, callBack) {
   var fees = window.web3.toWei(0.05, 'ether');
-  phrContract.addACLFileAddress(fileOwner, fileAddress, { value: fees, gas: 500000 }, callBack);
+  phrContract.setACLFileAddress(fileAddress, { value: fees, gas: 500000 }, callBack);
 }
 
 function getACLFileAddress(fileOwner, callBack) {
