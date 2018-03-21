@@ -26,7 +26,7 @@ class PatientViewer extends Component {
 
                 var arrayBuffer = reader.result;
                 var cipher = EncryptionHelper.encrypt(arrayBuffer, symmetricKey);
-                var decryptedByteArray = EncryptionHelper.decrypt(cipher, symmetricKey, fileLength);
+                var decryptedByteArray = EncryptionHelper.decryptAsByteArray(cipher, symmetricKey, fileLength);
                 var blob = new Blob([decryptedByteArray], {type: fileType}).slice(0, fileLength);
                 saveAs(blob, 'decrypted-'+fileName)
 

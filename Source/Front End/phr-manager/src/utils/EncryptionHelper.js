@@ -38,8 +38,19 @@ export function encrypt(arrayBuffer, symmetricKey){
     return encryptedText;
 }
 
-export function decrypt(encryptedText, symmetricKey){
+export function decryptAsWordArray(encryptedText, symmetricKey){
     var wordArray = CryptoJS.AES.decrypt(encryptedText, symmetricKey);
+    return wordArray;
+}
+
+export function decryptAsByteArray(encryptedText, symmetricKey){
+    var wordArray = decryptAsWordArray(encryptedText, symmetricKey);
     var bytearray = convertWordArrayToUint8Array(wordArray);
     return bytearray;
+}
+
+export function decryptAsString(encryptedText, symmetricKey){
+    var wordArray = decryptAsWordArray(encryptedText, symmetricKey);
+    var str = wordArray.toString();
+    return str;
 }
