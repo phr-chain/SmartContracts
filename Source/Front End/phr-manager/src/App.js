@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
 
-import PatientViewer from'./containers/PatientViewer'
-import DoctorViewer from'./containers/DoctorViewer'
+//import PatientViewer from'./containers/PatientViewer'
+import LoginViewer from'./containers/LoginViewer'
 
-import './App.css';
 
 class App extends Component {
+  constructor(){
+    super();
+    this.state = {
+      privateKey:'',
+      publicKey: ''
+    }
+  }
   render() {
     return (
-      <div className="App container">
-        <PatientViewer/>
-      </div>
+        <LoginViewer
+         privateKey={this.state.privateKey}
+         publicKey = {this.state.publicKey}
+         onPrivateKeyChanged = {key => this.setState({privateKey: key})}
+         onPublicKeyChanged = {key => this.setState({publicKey: key})}
+         />
     );
   }
 }
