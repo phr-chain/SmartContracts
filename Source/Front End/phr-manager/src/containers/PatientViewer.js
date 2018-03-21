@@ -6,7 +6,8 @@ import * as EncryptionHelper from '../utils/EncryptionHelper'
 import * as StorageHelper from '../utils/StorageHelper'
 import * as PHRHelper from '../utils/PHRSmartContractHelper'
 import * as EthHelper from '../utils/EtherumHelper'
-import * as FileSaver from 'file-saver';
+import {saveAs} from 'file-saver';
+var FileSaver = require('file-saver');
 const CryptoJS = require("crypto-js");
 
 class PatientViewer extends Component {
@@ -25,15 +26,16 @@ class PatientViewer extends Component {
                 // var blob = new Blob([original], {type: "text/plain;charset=utf-8"});
                 // FileSaver.saveAs(blob, "encrypted-hello.txt");
                 var new_file = new File([original], "encrypted-world.txt", {type: "text/plain;charset=utf-8"});
-                try{
-                    FileSaver.saveAs(new_file);
-                } catch(e){
-                    console.log("11111111111", e);
-                }
+                
                 try{
                     window.saveAs(new_file);
                 } catch(e){
                     console.log("222222222222", e);
+                }
+                try{
+                    saveAs(new_file);
+                } catch(e){
+                    console.log("3333333333333", e);
                 }
                 console.log("original", original);
                 
