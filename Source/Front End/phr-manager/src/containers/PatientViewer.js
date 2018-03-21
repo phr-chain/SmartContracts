@@ -7,6 +7,7 @@ import * as StorageHelper from '../utils/StorageHelper'
 import * as PHRHelper from '../utils/PHRSmartContractHelper'
 import * as EthHelper from '../utils/EtherumHelper'
 import {saveAs} from 'file-saver';
+import * as ACLHelper from '../utils/ACLHelper'
 var FileSaver = require('file-saver');
 const CryptoJS = require("crypto-js");
 
@@ -53,8 +54,9 @@ class PatientViewer extends Component {
     }
 
     render() {
+        ACLHelper.test();
         return (
-           <input type="file" onChange={this.uploadFile} />
+            <input type="file" onChange={this.uploadFile} />
         );
     }
 }
