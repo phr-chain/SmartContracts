@@ -125,7 +125,7 @@ export function updateSharedWithMe(senderACLFile, senderpubKey, recieverACLFile,
         return false;
 
     filesSharedWithReciever.foreach((file)=> addFileToSharedWithMeList(recieverACLFile, senderpubKey));
-    return false;
+    return true;
 }
 //Test///////////////////////////////////////////////
 // export function test(aclFile) {
