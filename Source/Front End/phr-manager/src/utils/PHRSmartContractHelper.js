@@ -75,3 +75,7 @@ function setACLFileAddress(fileAddress, callBack) {
 function getACLFileAddress(fileOwner, callBack) {
   phrContract.getACLFileAddress(fileOwner, callBack);
 }
+
+function getMyACLFileAddress(callBack) {
+  phrContract.getACLFileAddress(callBack);
+}
