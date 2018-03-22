@@ -50,7 +50,28 @@ const testAclFile =
                         "encryptedFileName": "AAAAAAAAAAAAAXXXXXXXXXXXXXXX"
                     }
                 ]
+            },
+            "sharedWithMe": {
+                "Bob Public Key": [
+                    {
+                        "fileAddress": "<IPFS filexxx address>",
+                        "encryptedSymmetricKey": "aaaaaaaaaaa",
+                        "encryptedFileName": "aaaaaaaaaname"
+                    }, {
+                        "fileAddress": "<IPFS fileyyy address>",
+                        "encryptedSymmetricKey": "bbbbbbbbbbbb",
+                        "encryptedFileName": "bbbbbbbbbname"
+                    }
+                ],
+                "Alice Public Key": [
+                    {
+                        "fileAddress": "<IPFS filezzz address>",
+                        "encryptedSymmetricKey": "cccccccccccccccc",
+                        "encryptedFileName": "cccccccccccname"
+                    }
+                ]
             }
+
         }
     }
 
@@ -127,7 +148,7 @@ class PatientViewer extends Component {
                     files={this.myFiles()}
                     downloadMyFile={this.downloadMyFile}
                     shareMyFile={this.shareMyFile}
-                    title='My files'
+                    privateKey = {this.props.privateKey}
                 />
 
                 {/* <FilesList

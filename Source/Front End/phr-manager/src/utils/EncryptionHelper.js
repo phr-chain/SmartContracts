@@ -65,3 +65,11 @@ export function generatePubPrivateKeys(){
         privateKey: '0xprivateKey',
     };
 }
+
+export function decrypt(encryptedText, encryptedSymetricKey, privateKey){
+    /**TODO
+     * Decrypt symetric key using private key
+     * Decrypt text using symetric key
+     */
+    return encryptedText;
+}
