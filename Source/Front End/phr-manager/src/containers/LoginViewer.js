@@ -22,7 +22,7 @@ class LoginViewer extends Component {
         this.props.onLogin();
     }
     createAccount() {
-        var keys = EncryptionHelper.generatePubPrivateKeys();
+        var keys = EncryptionHelper.test()//.generatePubPrivateKeys();
         this.props.onPublicKeyChanged(keys.publicKey);
         this.props.onPrivateKeyChanged(keys.privateKey);
     }
