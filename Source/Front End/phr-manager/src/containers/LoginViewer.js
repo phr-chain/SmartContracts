@@ -10,7 +10,7 @@ import * as CommonHelper from '../utils/CommonHelper'
 class LoginViewer extends Component {
 
     generatePblicKey() {
-        var pubKey = EncryptionHelper.generatePubKey(this.props.privateKey);
+        var pubKey = EncryptionHelper.extractPubKey(this.props.privateKey);
         this.props.onPublicKeyChanged(pubKey);
 
     }
