@@ -13,6 +13,9 @@ function validateACLStructure(aclJson) {
     if (!aclJson.acl.hasOwnProperty('shares')) {
         aclJson.acl.shares = {};
     }
+    if (!aclJson.acl.hasOwnProperty('sharedWithMe')) {
+        aclJson.acl.sharedWithMe = {};
+    }
 }
 export function addFileAccess(aclJson, myPubAddress, fileAddress, encryptedsharedkey, encryptedFileName) {
 
@@ -42,6 +45,16 @@ export function shareFile(aclJson, recieverPubKey, fileAddress, encryptedsharedk
     })
 }
 
+export function addFileToSharedWithMeList(aclJson, senderPubKey, fileData) {
+    validateACLStructure(aclJson);
+
+    if (!aclJson.acl.sharedWithMe.hasOwnProperty(senderPubKey)) {
+        aclJson.acl.sharedWithMe[senderPubKey] = [];
+    }
+
+    aclJson.acl.sharedWithMe[senderPubKey].push(fileData);
+}
+
 export function getMyFileAccess(aclJson, fileAddress) {
     var files = aclJson.acl.files;
     if (!files)
@@ -69,20 +82,59 @@ export function listMyFiles(aclJson) {
     return aclJson.acl.files;
 }
 
-export function listSharedFiles(aclJson, recieverPubKey) {
+function listSharedFiles(aclJson, recieverPubKey, sectionName) {
     if (!aclJson.hasOwnProperty('acl')) {
         return [];
     }
-    if (!aclJson.acl.hasOwnProperty('shares')) {
+    if (!aclJson.acl.hasOwnProperty(sectionName)) {
         return [];
     }
-    if (!aclJson.acl.shares.hasOwnProperty(recieverPubKey)) {
+    if (!aclJson.acl[sectionName].hasOwnProperty(recieverPubKey)) {
         return [];
     }
-    return aclJson.acl.shares[recieverPubKey];
+    return aclJson.acl[sectionName][recieverPubKey];
 }
 
+export function listFilesIShared(aclJson, recieverPubKey) {
+    return listSharedFiles(aclJson, recieverPubKey, 'shares')
+}
 
+export function listFilesSharedWithMe(aclJson, recieverPubKey) {
+    return listSharedFiles(aclJson, recieverPubKey, 'sharedWithMe')
+}
+
+function listPeople(aclJson, sectionName) {
+    if (!aclJson.hasOwnProperty('acl')) {
+        return [];
+    }
+    if (!aclJson.acl.hasOwnProperty(sectionName)) {
+        return [];
+    }
+
+    var people = [];
+    for (var key in aclJson.acl[sectionName]) {
+        if (aclJson.acl[sectionName].hasOwnProperty(key)) {
+            people.push(key)
+        }
+    }
+    return people;
+}
+
+export function listPeopleIShareWithThem (aclJson) {
+    return listPeople(aclJson, 'shares');
+}
+
+export function listPeopleShareWithMe(aclJson) {
+    return listPeople(aclJson, 'sharedWithMe');
+}
+export function updateSharedWithMe(senderACLFile, senderpubKey, recieverACLFile, recieverPubKey){
+    var filesSharedWithReciever = listFilesIShared(senderACLFile,recieverPubKey);
+    if(filesSharedWithReciever.length() === 0)
+        return false;
+
+    filesSharedWithReciever.foreach((file)=> addFileToSharedWithMeList(recieverACLFile, senderpubKey));
+    return false;
+}
 //Test///////////////////////////////////////////////
 export function test(aclFile) {
     debugger;

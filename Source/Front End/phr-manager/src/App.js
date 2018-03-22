@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import PatientViewer from './containers/PatientViewer'
+import UserDashBoard from './containers/UserDashBoard'
 import LoginViewer from './containers/LoginViewer'
 
 const loginView = 0;
@@ -27,7 +27,7 @@ class App extends Component {
       );
     } else if (this.state.currentView === dashBoardView) {
       return (
-        <PatientViewer
+        <UserDashBoard
           privateKey={this.state.privateKey}
           publicKey={this.state.publicKey}
           onLogout={() => this.setState({ currentView: loginView })}
