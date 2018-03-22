@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import '../App.css'
 
-import * as EncryptionHelper from '../utils/EncryptionHelper'
-class FilesList extends Component {
+class SharedFiles extends Component {
+    renderDownload(file){
+        return this.props.downloadFile ? <button className='btn-inline right_align' onClick={e => this.props.downloadFile(file)}> Download</button>: null;
+    }
     render() {
         return (
             <table className='inline_dislay'>
@@ -10,15 +12,18 @@ class FilesList extends Component {
                     <tr><h3>{this.props.title}:</h3></tr>
                     <tr>
                         <th>File name</th>
+                        <th>{this.props.sharedWithMeMode ? 'Shared by' : 'Shared to'}</th>
                     </tr>
                     {
                         this.props.files.map((file, i) => {
                             return (
                                 <tr key={i}>
                                     <td>
-                                        {EncryptionHelper.decrypt(file.encryptedFileName, file.encryptedSymmetricKey, this.props.privateKey)}
-                                        <button className='btn-inline right_align' onClick={e => this.props.downloadMyFile(file)}> Download</button>
-                                        <button className='btn-inline right_align' onClick={e => this.props.shareMyFile(file)}> Share</button>
+                                        {file.fileName}
+                                        {this.renderDownload(file)}
+                                    </td>
+                                    <td>
+                                        {file.owner}
                                     </td>
                                 </tr>)
                         })
@@ -29,4 +34,4 @@ class FilesList extends Component {
     }
 }
 
-export default FilesList;
+export default SharedFiles;
