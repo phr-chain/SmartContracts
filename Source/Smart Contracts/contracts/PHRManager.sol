@@ -28,6 +28,9 @@ contract PHRManager {
     function getACLFileAddress(address _fileOwner) public view returns(address) {
         return acls[_fileOwner];
     }
+    function getMyACLFileAddress() public view returns(address) {
+        return acls[msg.sender];
+    }
 
     function() public payable {
         //Change this action latter

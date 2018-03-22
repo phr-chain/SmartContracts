@@ -13,7 +13,6 @@ function validateACLStructure(aclJson) {
     if (!aclJson.acl.hasOwnProperty('shares')) {
         aclJson.acl.shares = {};
     }
-
 }
 export function addFileAccess(aclJson, myPubAddress, fileAddress, encryptedsharedkey, encryptedFileName) {
 
@@ -60,53 +59,32 @@ export function getSharedFileAccess(aclJson, fileAddress, recieverPubKey) {
 }
 
 export function listMyFiles(aclJson) {
+    if (!aclJson.hasOwnProperty('acl')) {
+        return [];
+    }
+    if (!aclJson.acl.hasOwnProperty('files')) {
+        return [];
+    }
+
     return aclJson.acl.files;
 }
 
-export function listSharediles(aclJson, recieverPubKey) {
+export function listSharedFiles(aclJson, recieverPubKey) {
+    if (!aclJson.hasOwnProperty('acl')) {
+        return [];
+    }
+    if (!aclJson.acl.hasOwnProperty('shares')) {
+        return [];
+    }
+    if (!aclJson.acl.shares.hasOwnProperty(recieverPubKey)) {
+        return [];
+    }
     return aclJson.acl.shares[recieverPubKey];
 }
 
 
 //Test///////////////////////////////////////////////
-var aclFile =
-    {
-        "acl": {
-            "publicAddress": "Mahmoud Public Key",
-            "files": [
-                {
-                    "fileAddress": "<IPFS fileA address>",
-                    "encryptedSymmetricKey": "11111111111111111111",
-                    "encryptedFileName": "AAAAAAAAAAAAAAAAAAAAAA"
-                }, {
-                    "fileAddress": "<IPFS fileB address>",
-                    "encryptedSymmetricKey": "22222222222222222222222222",
-                    "encryptedFileName": "BBBBBBBBBBBBBBBBBBBBBBBBBBB"
-                }
-            ],
-            "shares": {
-                "Maha Public Key": [
-                    {
-                        "fileAddress": "<IPFS fileA address>",
-                        "encryptedSymmetricKey": "1X1X1X1X1X1X1X1X1X",
-                        "encryptedFileName": "AXAXAXAXAXAXAXAXAXAXAX"
-                    }, {
-                        "fileAddress": "<IPFS fileB address>",
-                        "encryptedSymmetricKey": "2X2X2X2X2X2X2X2X2X",
-                        "encryptedFileName": "BXBXBXBXBXBXBXBXBXBXBX"
-                    }
-                ],
-                "Taher Public Key": [
-                    {
-                        "fileAddress": "<IPFS fileA address>",
-                        "encryptedSymmetricKey": "1111111111111XXXXXXXXXXXXXX",
-                        "encryptedFileName": "AAAAAAAAAAAAAXXXXXXXXXXXXXXX"
-                    }
-                ]
-            }
-        }
-    }
-export function test() {
+export function test(aclFile) {
     debugger;
     var aclJson = {};
     addFileAccess(aclJson, "Mahmoud Public Key", "<IPFS fileA address>", "11111111111111111111", "AAAAAAAAAAAAAAAAAAAAAA");

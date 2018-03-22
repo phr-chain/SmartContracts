@@ -1,7 +1,6 @@
 
-.login-container {
-  margin-top: 20px;
-  margin-left: 20px;
+.page-container {
+  margin: 20px;
   
   /* position: absolute;
   margin-left: 20x; */
@@ -48,7 +47,14 @@
   margin-left: 10px;
 
 }
-
+.btn-inline{
+  background-color: rgba(233, 148, 58, 0.76);
+  /* color: white; */
+  height: 35px;
+  margin-left:10px;
+  border-color: rgb(203, 128, 49);
+  cursor: pointer;
+}
 .input-common {
   font-size: 24pt;
   align-self: center;
@@ -61,6 +67,47 @@
   border-width: 5;
 
   padding: 10x;
+}
+
+.right_align{
+  float: right;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 40%;
+  margin-right: 20px;
+  display:inline;
+}
+
+td {
+  border: 1px solid rgb(219, 21, 125);
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: rgb(219, 21, 125);
+  color: white;
+  text-align: left;
+  font-size: 16pt;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: rgba(219, 21, 125, 0.11);
+}
+
+.inputfile {
+  
+	/* width: 0.1px;
+  height: 0.1px; */
+  background-color: rgba(219, 21, 125, 0.11);
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
 }
 /* .App-logo {
   animation: App-logo-spin infinite 20s linear;

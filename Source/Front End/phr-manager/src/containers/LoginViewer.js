@@ -28,7 +28,7 @@ class LoginViewer extends Component {
     }
     render() {
         return (
-            <div className=' login-container'>
+            <div className='page-container'>
                 <input
                     placeholder='Enter your private key'
                     className='input-common'
