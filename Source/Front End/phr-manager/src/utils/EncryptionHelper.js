@@ -1,4 +1,6 @@
-var CryptoJS = require("crypto-js");
+const CryptoJS = require("crypto-js");
+const crypto = require('crypto');
+const ecies = require('standard-ecies');
 
 function convertArrayBuffer2WordArray(arraybuffer)
 {
@@ -15,8 +17,7 @@ function convertArrayBuffer2WordArray(arraybuffer)
 function convertWordArrayToUint8Array(wordArray) {
 	var len = wordArray.words.length,
 		u8_array = new Uint8Array(len << 2),
-		offset = 0, word, i
-    ;
+		offset = 0, word, i;
     
 	for (i=0; i<len; i++) {
 		word = wordArray.words[i];
@@ -55,14 +56,26 @@ export function decryptAsString(encryptedText, symmetricKey){
     return str;
 }
 
-export function generatePubKey(privteKey){
-    return "public key";
+const curveName = 'secp256k1';
+
+export function extractPubKey(privteKeyHex){
+    // console.log(privteKeyHex);
+    // var ecdh = crypto.createECDH(curveName);
+    // // ecdh.generateKeys();
+    // debugger
+    // ecdh.setPrivateKey(privteKeyHex, 'hex');
+
+    // return ecdh.getPublicKey('hex').toString();
+    return "public";
 }
 
 export function generatePubPrivateKeys(){
+    var ecdh = crypto.createECDH(curveName);
+    ecdh.generateKeys();
+
     return  {
-        publicKey: '0xpublicKey',
-        privateKey: '0xprivateKey',
+        publicKey: ecdh.getPublicKey('hex').toString(),
+        privateKey: ecdh.getPrivateKey('hex').toString(),
     };
 }
 
