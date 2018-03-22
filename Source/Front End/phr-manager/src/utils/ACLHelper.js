@@ -45,6 +45,16 @@ export function shareFile(aclJson, recieverPubKey, fileAddress, encryptedsharedk
     })
 }
 
+export function addFileToSharedWithMeList(aclJson, senderPubKey, fileData) {
+    validateACLStructure(aclJson);
+
+    if (!aclJson.acl.sharedWithMe.hasOwnProperty(senderPubKey)) {
+        aclJson.acl.sharedWithMe[senderPubKey] = [];
+    }
+
+    aclJson.acl.sharedWithMe[senderPubKey].push(fileData);
+}
+
 export function getMyFileAccess(aclJson, fileAddress) {
     var files = aclJson.acl.files;
     if (!files)
@@ -117,10 +127,13 @@ export function listPeopleIShareWithThem (aclJson) {
 export function listPeopleShareWithMe(aclJson) {
     return listPeople(aclJson, 'sharedWithMe');
 }
-export function updateSharedWithMe(fromACLFile, toACLFile){
-    //TODO
-    return false;
+export function updateSharedWithMe(senderACLFile, senderpubKey, recieverACLFile, recieverPubKey){
+    var filesSharedWithReciever = listFilesIShared(senderACLFile,recieverPubKey);
+    if(filesSharedWithReciever.length() === 0)
+        return false;
 
+    filesSharedWithReciever.foreach((file)=> addFileToSharedWithMeList(recieverACLFile, senderpubKey));
+    return false;
 }
 //Test///////////////////////////////////////////////
 export function test(aclFile) {
