@@ -1,7 +1,10 @@
 const CryptoJS = require("crypto-js");
 const bs58 = require('bs58');
-var EC = require('elliptic').ec;
-var ec = new EC('secp256k1');
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
+const crypto = require("crypto");
+const eccrypto = require("eccrypto");
+
 
 function convertArrayBuffer2WordArray(arraybuffer) {
     var words = [],
@@ -39,7 +42,7 @@ function base58ToHex(stringBase58) {
     return bytes.toString('hex');
 }
 
-function toBase58KeyPair(keyPair){
+function ecKeyToBase58KeyPair(keyPair){
     const publicKeyHex = keyPair.getPublic('hex').toString();
     const privateKeyHex = keyPair.getPrivate('hex').toString();
     const publicKeyBase58 = hexToBase58(publicKeyHex);
@@ -52,8 +55,9 @@ function toBase58KeyPair(keyPair){
 }
 
 export function generateSharedKey(){
-     return "TODO";
+    return crypto.randomBytes(32);
 }
+
 export function encrypt(arrayBuffer, symmetricKey){
     var wordArray = convertArrayBuffer2WordArray(arrayBuffer);
     var encryptionResult = CryptoJS.AES.encrypt(wordArray, symmetricKey);
@@ -78,15 +82,67 @@ export function decryptAsString(encryptedText, symmetricKey){
     return str;
 }
 
-export function extractPubKey(privteKeyBase58){
-    const privateKeyHex = base58ToHex(privteKeyBase58);
-    const keyPair = ec.keyFromPrivate(privateKeyHex);
-    return toBase58KeyPair(keyPair).publicKey;
+function keyBase58ToECKey(publicKeyBase58, privateKeyBase58){
+    if (publicKeyBase58){
+        const publicKeyHex = base58ToHex(publicKeyBase58);
+        return ec.keyFromPublic(publicKeyHex, 'hex');
+    } else if (privateKeyBase58) {
+        const privateKeyHex = base58ToHex(privateKeyBase58);
+        return ec.keyFromPrivate(privateKeyHex);
+    }
+}
+
+export function extractPubKey(privateKeyBase58){
+    const ecKey = keyBase58ToECKey(null, privateKeyBase58);
+    return ecKeyToBase58KeyPair(ecKey).publicKey;
 }
 
 export function generatePubPrivateKeys(){
-    const keyPair = ec.genKeyPair();
-    return toBase58KeyPair(keyPair);
+    const ecKey = ec.genKeyPair();
+    return ecKeyToBase58KeyPair(ecKey);
+}
+
+export function encryptByPublicKeyAsync(publicKeyBase58, message){
+    return new Promise(function(resolve, reject){
+        const publicKeyHex = base58ToHex(publicKeyBase58);
+        const publicKeyBuffer = new Buffer(publicKeyHex, 'hex');
+        eccrypto.encrypt(publicKeyBuffer, new Buffer(message))
+            .then(encrypted=>{
+                const json = JSON.stringify([
+                    encrypted.ciphertext.toString('hex'),
+                    encrypted.ephemPublicKey.toString('hex'),
+                    encrypted.iv.toString('hex'),
+                    encrypted.mac.toString('hex'),
+                ]);
+                resolve(json);
+            })
+            .catch(err=>reject(err));
+    });
+}
+
+export function decryptByPrivateKeyAsync(privateKeyBase58, cipher){
+    const jsonObj = JSON.parse(cipher);
+    const encrypted = {
+        ciphertext: new Buffer(jsonObj[0], 'hex'),
+        ephemPublicKey: new Buffer(jsonObj[1], 'hex'),
+        iv: new Buffer(jsonObj[2], 'hex'),
+        mac: new Buffer(jsonObj[3], 'hex'),
+    }
+    const privateKeyHex = base58ToHex(privateKeyBase58);
+    const privateKeyBuffer = new Buffer(privateKeyHex, 'hex');
+    return eccrypto.decrypt(privateKeyBuffer, encrypted);
+}
+
+export function test() {
+    var k1 = generatePubPrivateKeys();
+    var data = `PHR-Chain`;
+    encryptByPublicKeyAsync(k1.publicKey, data).then(function (cipher) {
+        decryptByPrivateKeyAsync(k1.privateKey, cipher).then(function (plaintext) {
+            console.log("@@@@@@@@@@@@@ :", plaintext.toString());
+        });
+    });
+
+    return k1;
 }
 
 export function decrypt(encryptedText, encryptedSymetricKey, privateKey){
