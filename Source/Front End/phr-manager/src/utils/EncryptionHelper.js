@@ -56,8 +56,8 @@ function ecKeyToBase58KeyPair(keyPair){
 
 export function generateSharedKey(){
     return crypto.randomBytes(32);
-    //  return "TODO";
 }
+
 export function encrypt(arrayBuffer, symmetricKey){
     var wordArray = convertArrayBuffer2WordArray(arrayBuffer);
     var encryptionResult = CryptoJS.AES.encrypt(wordArray, symmetricKey);
@@ -103,57 +103,46 @@ export function generatePubPrivateKeys(){
 }
 
 export function encryptByPublicKeyAsync(publicKeyBase58, message){
-    const ecKey = keyBase58ToECKey(publicKeyBase58, null);
-    eccrypto.encrypt()
+    return new Promise(function(resolve, reject){
+        const publicKeyHex = base58ToHex(publicKeyBase58);
+        const publicKeyBuffer = new Buffer(publicKeyHex, 'hex');
+        eccrypto.encrypt(publicKeyBuffer, new Buffer(message))
+            .then(encrypted=>{
+                const json = JSON.stringify([
+                    encrypted.ciphertext.toString('hex'),
+                    encrypted.ephemPublicKey.toString('hex'),
+                    encrypted.iv.toString('hex'),
+                    encrypted.mac.toString('hex'),
+                ]);
+                resolve(json);
+            })
+            .catch(err=>reject(err));
+    });
 }
 
-export function decryptByPublicKeyAsync(privateKeyBase58, message){
-    
-}
-export function test(){
-    var k1 = generatePubPrivateKeys();
-    var k2 = generatePubPrivateKeys();
-    var a = keyBase58ToECKey(k1.publicKey, null);
-    var b = keyBase58ToECKey(null, k2.privateKey);
-    var A = a.getPublic('ar');
-    var B = b.getPrivate('ar');
-var msg = {
-    "name": "phr-manager",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-      "antd": "^3.3.1",
-      "bs58": "^4.0.1",
-      "crypto-js": "^3.1.9-1",
-      "eslint": "^4.19.0",
-      "ipfs-api": "^18.2.0",
-      "react": "^16.2.0",
-      "react-dom": "^16.2.0",
-      "react-scripts": "1.1.1",
-      "save-as": "^0.1.8",
-      "web3": "^0.20.6"
-    },
-    "scripts": {
-      "start": "react-scripts start",
-      "build": "react-scripts build",
-      "test": "react-scripts test --env=jsdom",
-      "eject": "react-scripts eject"
+export function decryptByPrivateKeyAsync(privateKeyBase58, cipher){
+    const jsonObj = JSON.parse(cipher);
+    const encrypted = {
+        ciphertext: new Buffer(jsonObj[0], 'hex'),
+        ephemPublicKey: new Buffer(jsonObj[1], 'hex'),
+        iv: new Buffer(jsonObj[2], 'hex'),
+        mac: new Buffer(jsonObj[3], 'hex'),
     }
-  };
-  var json = JSON.stringify(msg);
-  
-eccrypto.encrypt(A, Buffer(json)).then(function(encrypted) {
-    // B decrypting the message.
-    eccrypto.decrypt(B, encrypted).then(function(plaintext) {
-        console.log("Message to part B:", plaintext.toString());
-        debugger
+    const privateKeyHex = base58ToHex(privateKeyBase58);
+    const privateKeyBuffer = new Buffer(privateKeyHex, 'hex');
+    return eccrypto.decrypt(privateKeyBuffer, encrypted);
+}
+
+export function test() {
+    var k1 = generatePubPrivateKeys();
+    var data = `PHR-Chain`;
+    encryptByPublicKeyAsync(k1.publicKey, data).then(function (cipher) {
+        decryptByPrivateKeyAsync(k1.privateKey, cipher).then(function (plaintext) {
+            console.log("@@@@@@@@@@@@@ :", plaintext.toString());
+        });
     });
-  });
-  debugger
-  return {
-    publicKey: A,
-    privateKey: B
-  };
+
+    return k1;
 }
 
 export function decrypt(encryptedText, encryptedSymetricKey, privateKey){
