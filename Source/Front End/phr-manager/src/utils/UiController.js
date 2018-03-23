@@ -19,6 +19,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                 // encrypt file
                 var genSymmetricKey = EncryptionHelper.generateSharedKey();
                 var cipher = EncryptionHelper.encrypt(arrayBuffer, genSymmetricKey);
+                console.log("Cupher: " + cipher);
 
                 // upoade file 
                 StorageHelper.uploadFile(cipher)
@@ -31,30 +32,39 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                             size: fileLength,
                             mimeType: fileType
                         };
+                        console.log("Current fileAccess: "+JSON.stringify(fileAccess));
+                        
                         ACLHelper.addFileAccess(currentACL, accountPublicAddress, fileAccess);
-
+                        console.log("Current ACL: "+JSON.stringify(currentACL));
+                       
                         // store ACL in ipfs(encryption included) 
                         StorageHelper.uploadAclFile(currentACL, accountPublicAddress)
                             .then((aclHash) => {
                                 PHRSmartContractHelper.setACLFileAddress(aclHash, (smartContractError, smartContractResult) => {
-                                    if (error) {
+                                    if (smartContractError) {
+                                        console.log(smartContractError);
                                         reject(smartContractError);
                                     } else {
 
-                                        resolve({
+                                        let uploadResult = {
                                             currentACL,
                                             fileHash,
                                             aclHash
 
-                                        });
+                                        };
+
+                                        console.log(JSON.stringify(uploadResult));
+                                        resolve(uploadResult);
                                     }
                                 })
                             })
                             .catch((aclStoreError) => {
+                                console.log(aclStoreError);
                                 reject(aclStoreError);
                             });
                     })
                     .catch((uploadErr) => {
+                        console.log(uploadErr);
                         reject(uploadErr);
                     });
 
