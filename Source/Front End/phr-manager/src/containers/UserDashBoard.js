@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 
-import * as EncryptionHelper from '../utils/EncryptionHelper'
-import * as StorageHelper from '../utils/StorageHelper'
-import * as PHRHelper from '../utils/PHRSmartContractHelper'
+// import * as EncryptionHelper from '../utils/EncryptionHelper'
+// import * as StorageHelper from '../utils/StorageHelper'
+// import * as PHRHelper from '../utils/PHRSmartContractHelper'
 import * as ACLManager from '../utils/ACLManager'
 import * as CommnHelper from '../utils/CommonHelper'
-import * as Test from '../utils/TestData'
+// import * as Test from '../utils/TestData'
+// import saveAs from 'save-as'
 
 import FilesList from '../components/FilesList'
 import SharedFiles from '../components/SharedFiles'
 import * as UiController from '../utils/UiController'
 
-
-import saveAs from 'save-as'
 import '../App.css';
 
 class UserDashBoard extends Component {
@@ -95,22 +94,19 @@ class UserDashBoard extends Component {
         this.state = { aclFile: {}, sharedWithMeAcls: [] };
     }
 
-    aclUpdated(){
-        this.reloadACL();
-    }
-
     reloadACL(){
-        ACLManager.readAsync().then((newAclState)=>{
-            // newAclState contains {files, shares, sharedWithMe}
-            this.setState(newAclState);
-        });
+        ACLManager.readAsync().then((newAclState)=>
+        this.setState({
+            files: newAclState.files,
+            shares: newAclState.shares,
+            sharedWithMe: newAclState.sharedWithMe,
+        }));
     }
 
     componentWillMount() {
         // TODO: init myAclEncJson from IPFS & ETH
         var myAclEncJson = {}; 
-        ACLManager.init(this.state.publicKey, this.state.privateKey, this.updateACL, myAclEncJson );
-        this.reloadACL();
+        ACLManager.init(this.props.publicKey, this.props.privateKey, this.reloadACL.bind(this), myAclEncJson );
         //TODO
         // PHRHelper.getMyACLFileAddress((error, result)=>{
         //     if(error){
@@ -128,20 +124,20 @@ class UserDashBoard extends Component {
                 <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
                 <br />
                 <FilesList
-                    files={this.files}
+                    files={this.state.files}
                     downloadMyFile={this.downloadMyFile}
                     shareMyFile={this.shareMyFile}
                     title = 'My uploaded files'
                     
                 />
                 <SharedFiles
-                    files={this.shares}
+                    files={this.state.shares}
                     sharedWithMeMode = {false}
                     title = 'Files I shared'
                 />
 
                 <SharedFiles
-                    files={this.sharedWithMe}
+                    files={this.state.sharedWithMe}
                     sharedWithMeMode = {true}
                     title = 'Files shared with me'
                     downloadFile={this.downloadSharedWithMeFile}

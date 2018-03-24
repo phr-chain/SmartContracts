@@ -13,7 +13,6 @@ export function init(myPubAddressBase58, myPrivAddressBase58, onUpdateCallback, 
     encJson = myAclEncJson || {};
     encJson.acl = encJson.acl || {};
     encJson.acl.files = encJson.acl.files || [];
-    
     onUpdate();
 }
 
@@ -67,13 +66,15 @@ export function readTestAsync(){
 }
 
 export function readAsync(){
-    var myFilesPromise = EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encJson.files.filter(isMyFile));
-    var sharedWithMePromise = EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encJson.files.filter(isSharedWithMe));
-    var shares = encJson.files.filter(isSharedWithOther);
+    var myFilesPromise = EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encJson.acl.files.filter(isMyFile));
+    var sharedWithMePromise = EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encJson.acl.files.filter(isSharedWithMe));
+    var shares = encJson.acl.files.filter(isSharedWithOther);
     return new Promise(function(resolve, reject){
-        var files, sharedWithMe;
-        [files, sharedWithMe]= Promise.all([myFilesPromise, sharedWithMePromise]);
-        resolve({files, shares, sharedWithMe});
+        Promise.all([myFilesPromise, sharedWithMePromise])
+            .then(results=>{
+                const [files, sharedWithMe] = results;
+                resolve({files, shares, sharedWithMe});
+            });
     });
 }
 
@@ -83,7 +84,7 @@ function lockFileAsync(plainFileAccess, toAddress, fromAddress){
         delete plainLock.fileAddress;
         EncryptionHelper.encryptByPublicKeyAsync(toAddress, JSON.stringify(plainLock))
             .then((lock)=> {
-                resolve({fromAddress, toAddress, fileAddress, lock});
+                resolve({fromAddress, toAddress, fileAddress: plainFileAccess.fileAddress, lock});
             });
     });
 }
@@ -93,7 +94,7 @@ export function addNewFileAccessAsync(plainFileAccess, toAddressBase58){
     var toAddress = toAddressBase58 || pubAddressBase58;
     return lockFileAsync(plainFileAccess, toAddress, fromAddress)
         .then(encFileAccess=>{
-            encJson.files.push(encFileAccess);
+            encJson.acl.files.push(encFileAccess);
             onUpdate();
         });
 }
