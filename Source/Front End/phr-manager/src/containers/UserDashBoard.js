@@ -34,9 +34,15 @@ class UserDashBoard extends Component {
     }
     shareMyFile(fileData) {
         //TODO
-        var recieverublicKey = prompt("Please enter reciever public key");
-        if(CommnHelper.isValidString(recieverublicKey)){
-            alert(recieverublicKey)
+        var recieverPublicKey = prompt("Please enter reciever public key");
+        if(CommnHelper.isValidString(recieverPublicKey)){
+            UiController.shareFileWithAccount(fileData, recieverPublicKey)
+            .then(res=>{
+                console.log(res);
+                CommnHelper.notify("Share Done");
+            }).catch(err=>{
+                alert(err);
+            })
         }
         
     }
@@ -78,16 +84,17 @@ class UserDashBoard extends Component {
     }
 
     componentWillMount() {
-        // TODO: init myAclEncJson from IPFS & ETH
+
         var myAclEncJson = {}; 
-        //TODO
         UiController.getMyACLFile(this.props.publicKey, this.props.privateKey)
         .then(myAclFile=>{ 
             ACLManager.init(this.props.publicKey, this.props.privateKey, this.reloadACL.bind(this), myAclFile );
 
+        }).catch(err=>{
+            CommnHelper.notify("Unable to get acl file");
         });
             // if(error){
-            //     CommnHelper.notify("Unable to get acl file");
+            //     
             // }else{
             //     acl = StorageHelper.downloadFile(result);
             //     this.setState({aclFile: acl});
