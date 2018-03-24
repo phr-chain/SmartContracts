@@ -24,7 +24,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                 StorageHelper.uploadFile(cipher)
                     .then((fileHash) => {
                         // add file access
-                        
+
                         let fileAccess = {
                             fileAddress: fileHash,
                             symmetricKey: genSymmetricKey,
@@ -32,44 +32,44 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                             size: fileLength,
                             mimeType: fileType
                         };
-                        console.log("Current fileAccess: "+JSON.stringify(fileAccess));
-                        
+                        console.log("Current fileAccess: " + JSON.stringify(fileAccess));
+
                         ACLManager.addNewFileAccessAsync(fileAccess)
-                        .then(()=>{
-                            var accessFile = ACLManager.getEncryptedACLJson();
-                            console.log("Updated  ACL: "+JSON.stringify(accessFile));
-                       
-                            // store ACL in ipfs(encryption included) 
-                            
-                            
-                            StorageHelper.uploadAclFile(accessFile, accountPublicAddress)
-                                .then((aclHash) => {
-                                    
-                                    PHRSmartContractHelper.setACLFileAddress(aclHash, (smartContractError, smartContractResult) => {
-                                      
-                                        if (smartContractError) {
-                                            console.log(smartContractError);
-                                            reject(smartContractError);
-                                        } else {
-    
-                                            
-                                            let uploadResult = {
-                                                accessFile,
-                                                fileHash,
-                                                aclHash
-    
-                                            };
-    
-                                            console.log(JSON.stringify(uploadResult));
-                                            resolve(uploadResult);
-                                        }
+                            .then(() => {
+                                var accessFile = ACLManager.getEncryptedACLJson();
+                                console.log("Updated  ACL: " + JSON.stringify(accessFile));
+
+                                // store ACL in ipfs(encryption included) 
+
+
+                                StorageHelper.uploadAclFile(accessFile, accountPublicAddress)
+                                    .then((aclHash) => {
+
+                                        PHRSmartContractHelper.setACLFileAddress(accountPublicAddress, aclHash, (smartContractError, smartContractResult) => {
+
+                                            if (smartContractError) {
+                                                console.log(smartContractError);
+                                                reject(smartContractError);
+                                            } else {
+
+
+                                                let uploadResult = {
+                                                    accessFile,
+                                                    fileHash,
+                                                    aclHash
+
+                                                };
+
+                                                console.log(JSON.stringify(uploadResult));
+                                                resolve(uploadResult);
+                                            }
+                                        })
                                     })
-                                })
-                                .catch((aclStoreError) => {
-                                    console.log(aclStoreError);
-                                    reject(aclStoreError);
-                                }); 
-                        });
+                                    .catch((aclStoreError) => {
+                                        console.log(aclStoreError);
+                                        reject(aclStoreError);
+                                    });
+                            });
 
                     })
                     .catch((uploadErr) => {
@@ -88,27 +88,30 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
         }
         reader.readAsArrayBuffer(file);
     });
- 
+
 }
 
 
-export function getMyACLFile(publicKey, privateKey){
- return new Promise((resolve, reject) => {
-    PHRSmartContractHelper.getACLFileAddress(publicKey,(error, myAclRes)=>{
-        if(error){
-            debugger;
-            reject(error)  
-        }
-        else{
-            if(!CommonHelper.isValidString(myAclRes))
-                reject("Public key not exist: "+ publicKey);
-            
-            StorageHelper.downloadAclFile(myAclRes)
-                .then(aclFileres=>{
-                    resolve(aclFileres);
-                });
-            
-        }
-    })
- });
+export function getMyACLFile(publicKey, privateKey) {
+    return new Promise((resolve, reject) => {
+        PHRSmartContractHelper.getACLFileAddress(publicKey, (error, myAclRes) => {
+            if (error) {
+                reject(error)
+            } else {
+                if (!CommonHelper.isValidString(myAclRes)) {
+                    resolve({});
+                } else {
+                    StorageHelper.downloadAclFile(myAclRes)
+                        .then(aclFileres => {
+                            resolve(aclFileres);
+                        });
+                }
+
+            }
+        })
+    });
+}
+
+export function shareFileWithAccount(fileData, recieverPublicKey) {
+
 }
