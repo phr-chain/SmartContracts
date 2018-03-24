@@ -31,9 +31,10 @@ class UserDashBoard extends Component {
     }
 
     downloadMyFile(fileData) {
-        //TODO
-        alert(JSON.stringify(fileData))
-
+        UiController
+            .downloadMyFileAsync(fileData)
+            .then(console.log)
+            .catch(console.error);
     }
     shareMyFile(fileData) {
         //TODO

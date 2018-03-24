@@ -2,9 +2,32 @@ import * as StorageHelper from "./StorageHelper";
 import * as EncryptionHelper from "./EncryptionHelper"
 import * as ACLManager from '../utils/ACLManager'
 import * as PHRSmartContractHelper from "./PHRSmartContractHelper"
+import saveAs from 'save-as'
 import * as CommonHelper from '../utils/CommonHelper'
 
-export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
+/**
+ * Download file from IPFS, decrypt it, and save the disk
+ * @param FileData: { 
+ * fileAddress:"QmVtUsMpt4PUYwkRs6iDbAmQRjfLTLDBou97UvGUpUn1TF"
+ * fileName:"8.txt"
+ * fromAddress:"N16nHAtCmhQaskXnid3pmB6yUtCP5u1kt4gvnmu7xH2GHDDNnjzjqwEyySDrvyrDSLLgRFv9Mrnp3NxLtHdYnhPS"
+ * mimeType:"text/plain"
+ * size:180
+ * symmetricKey:"hjasklhfkjsdgfksjdgf"
+ * toAddress:"N16nHAtCmhQaskXnid3pmB6yUtCP5u1kt4gvnmu7xH2GHDDNnjzjqwEyySDrvyrDSLLgRFv9Mrnp3NxLtHdYnhPS"
+ * }
+ */
+export function downloadMyFileAsync(fileData) {
+    return new Promise((resolve, reject)=>{
+        StorageHelper.downloadFile(fileData.fileAddress).then(encryptedFile=>{
+            var decryptedByteArray = EncryptionHelper.decryptAsByteArray(encryptedFile.toString(), fileData.symmetricKey);
+            var blob = new Blob([decryptedByteArray], { type: fileData.mimeType }).slice(0, fileData.size);
+            saveAs(blob, fileData.fileName)
+        });
+    });
+}
+
+export function uploadFileToAccount(file, accountPublicAddress) {
     var reader = new FileReader();
 
     return new Promise((resolve, reject) => {
