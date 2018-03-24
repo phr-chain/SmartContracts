@@ -66,8 +66,8 @@ export function readTestAsync(){
 }
 
 export function readAsync(){
-    var myFilesPromise = EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encJson.acl.files.filter(isMyFile));
-    var sharedWithMePromise = EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encJson.acl.files.filter(isSharedWithMe));
+    var myFilesPromise = unlockFilesAsync(encJson.acl.files.filter(isMyFile));
+    var sharedWithMePromise = unlockFilesAsync(encJson.acl.files.filter(isSharedWithMe));
     var shares = encJson.acl.files.filter(isSharedWithOther);
     return new Promise(function(resolve, reject){
         Promise.all([myFilesPromise, sharedWithMePromise])
@@ -76,6 +76,21 @@ export function readAsync(){
                 resolve({files, shares, sharedWithMe});
             });
     });
+}
+
+function unlockFileAsync(encFileAccess){
+    return new Promise(function(resolve, reject){
+        var plainFileAccess = Object.assign({}, encFileAccess);
+        EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encFileAccess.lock)
+            .then(unlock=>{
+                plainFileAccess = Object.assign(plainFileAccess, unlock);
+                resolve(plainFileAccess);
+            })
+    });
+}
+
+function unlockFilesAsync(encFilesAccess){
+    return Promise.all(encFilesAccess.map(unlockFileAsync));
 }
 
 function lockFileAsync(plainFileAccess, toAddress, fromAddress){
