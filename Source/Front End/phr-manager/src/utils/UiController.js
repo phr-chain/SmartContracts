@@ -1,15 +1,13 @@
 import * as StorageHelper from "./StorageHelper";
 import * as EncryptionHelper from "./EncryptionHelper"
-import * as ACLHelper from "./ACLHelper"
+import * as ACLManager from '../utils/ACLManager'
 import * as PHRSmartContractHelper from "./PHRSmartContractHelper"
 
 export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
-
     var reader = new FileReader();
+
     return new Promise((resolve, reject) => {
-
         try {
-
             reader.onload = (readedFile) => {
                 var fileName = file.name;
                 var fileType = file.type;
@@ -19,7 +17,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                 // encrypt file
                 var genSymmetricKey = EncryptionHelper.generateSharedKey();
                 var cipher = EncryptionHelper.encrypt(arrayBuffer, genSymmetricKey);
-                console.log("Cupher: " + cipher);
+                console.log("cipher: " + cipher);
 
                 // upoade file 
                 StorageHelper.uploadFile(cipher)
@@ -35,7 +33,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                         };
                         console.log("Current fileAccess: "+JSON.stringify(fileAccess));
                         
-                        ACLHelper.addFileAccess(currentACL, accountPublicAddress, fileAccess);
+                        ACLManager.addNewFileAccessAsync(fileAccess);
                         console.log("Updated  ACL: "+JSON.stringify(currentACL));
                        
                         // store ACL in ipfs(encryption included) 
