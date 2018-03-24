@@ -80,16 +80,19 @@ class UserDashBoard extends Component {
     componentWillMount() {
         // TODO: init myAclEncJson from IPFS & ETH
         var myAclEncJson = {}; 
-        ACLManager.init(this.props.publicKey, this.props.privateKey, this.reloadACL.bind(this), myAclEncJson );
         //TODO
-        // PHRHelper.getMyACLFileAddress((error, result)=>{
-        //     if(error){
-        //         CommnHelper.notify("Unable to get acl file");
-        //     }else{
-        //         acl = StorageHelper.downloadFile(result);
-        //         this.setState({aclFile: acl});
-        //     }
-        // })
+        UiController.getMyACLFile(this.props.publicKey, this.props.privateKey)
+        .then(myAclFile=>{ 
+            ACLManager.init(this.props.publicKey, this.props.privateKey, this.reloadACL.bind(this), myAclFile );
+
+        });
+            // if(error){
+            //     CommnHelper.notify("Unable to get acl file");
+            // }else{
+            //     acl = StorageHelper.downloadFile(result);
+            //     this.setState({aclFile: acl});
+            // }
+        
     }
     render() {
         return (
