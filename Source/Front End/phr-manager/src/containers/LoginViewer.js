@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import '../App.css';
-
+import * as antd from "antd"
 // import { Row, Col } from 'antd'
 // import 'antd/lib/button/style/css';
 
@@ -76,11 +76,11 @@ class LoginViewer extends Component {
                     value={this.props.privateKey}
                     onChange={e => this.props.onPrivateKeyChanged(e.target.value)}
                 />
-                <button
+                <antd.Button
                     className='btn-generatePubKey'
                     onClick={e => this.generatePblicKey()}>
                     Generate public key
-                </button>
+                </antd.Button>
                 <br />
                 <input
                     placeholder='Enter your public key'
@@ -91,16 +91,16 @@ class LoginViewer extends Component {
                 <br />
                 <br />
 
-                <button
+                <antd.Button
                     className='btn-common btn-login'
                     onClick={e => this.login()}>
                     Login
-                </button>
-                <button
+                </antd.Button>
+                <antd.Button
                     className='btn-common btn-createaccount'
                     onClick={e => this.createAccount()}>
                     Generate new keys
-                </button>
+                </antd.Button>
 
             </div>
         );
