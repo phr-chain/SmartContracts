@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import * as antd from "antd"
+import { Spin } from "antd"
+import 'antd/dist/antd.css'
 
 // import * as EncryptionHelper from '../utils/EncryptionHelper'
 // import * as StorageHelper from '../utils/StorageHelper'
@@ -18,13 +19,15 @@ import '../App.css';
 class UserDashBoard extends Component {
 
     uploadFile = (e) => {
-        
-        UiController.uploadFileToAccount(e.target.files[0],this.props.publicKey,{})
-        .then(res=>{
-            console.log(res);
-        }).catch(err=>{
-            console.log(err);
-        });
+        this.setState({ actionIsLoading: true })
+        UiController.uploadFileToAccount(e.target.files[0], this.props.publicKey, {})
+            .then(res => {
+                console.log(res);
+                this.setState({ actionIsLoading: false })
+            }).catch(err => {
+                console.log(err);
+                this.setState({ actionIsLoading: false })
+            });
     }
 
     downloadMyFile(fileData) {
@@ -35,27 +38,27 @@ class UserDashBoard extends Component {
     shareMyFile(fileData) {
         //TODO
         var recieverPublicKey = prompt("Please enter reciever public key");
-        if(CommnHelper.isValidString(recieverPublicKey)){
+        if (CommnHelper.isValidString(recieverPublicKey)) {
             UiController.shareFileWithAccount(fileData, recieverPublicKey)
-            .then(res=>{
-                console.log(res);
-                CommnHelper.notify("Share Done");
-            }).catch(err=>{
-                alert(err);
-            })
+                .then(res => {
+                    console.log(res);
+                    CommnHelper.notify("Share Done");
+                }).catch(err => {
+                    alert(err);
+                })
         }
-        
+
     }
 
     downloadSharedWithMeFile(fileData) {
         //TODO
         alert(JSON.stringify(fileData))
     }
-    
+
     fetchFilesSharedWithMe() {
         //TODO
         var recieverublicKey = prompt("Please enter BLOCKCHAIN public key of the user who shares files with you");
-        if(CommnHelper.isValidString(recieverublicKey)){
+        if (CommnHelper.isValidString(recieverublicKey)) {
             alert(recieverublicKey)
             /* 
             * Ask smart contract about address of acl file of his user
@@ -64,75 +67,84 @@ class UserDashBoard extends Component {
             * upload your new ACL
             */
         }
-        
+
     }
 
     constructor() {
         super();
-        this.state = { aclFile: {}, sharedWithMeAcls: [] };
+        this.state = { actionIsLoading: false, aclFile: {}, sharedWithMeAcls: [] };
     }
 
-    reloadACL(){
-        ACLManager.readAsync().then((newAclState)=>{
+    reloadACL() {
+        this.setState({ actionIsLoading: true })
+        ACLManager.readAsync().then((newAclState) => {
             this.setState({
                 files: newAclState.files,
                 shares: newAclState.shares,
                 sharedWithMe: newAclState.sharedWithMe,
+                actionIsLoading: false,
             });
             console.log("ACLManager.getEncryptedACLJson: ", ACLManager.getEncryptedACLJson());
+        }).catch(e => {
+            this.setState({ actionIsLoading: false });
         });
     }
 
     componentWillMount() {
 
-        var myAclEncJson = {}; 
+        var myAclEncJson = {};
+        this.setState({ actionIsLoading: true })
         UiController.getMyACLFile(this.props.publicKey, this.props.privateKey)
-        .then(myAclFile=>{ 
-            ACLManager.init(this.props.publicKey, this.props.privateKey, this.reloadACL.bind(this), myAclFile );
+            .then(myAclFile => {
+                ACLManager.init(this.props.publicKey, this.props.privateKey, this.reloadACL.bind(this), myAclFile);
+                this.setState({ actionIsLoading: false })
+            }).catch(err => {
+                CommnHelper.notify("Unable to get acl file");
+                this.setState({ actionIsLoading: false });
+            });
 
-        }).catch(err=>{
-            CommnHelper.notify("Unable to get acl file");
-        });
-            // if(error){
-            //     
-            // }else{
-            //     acl = StorageHelper.downloadFile(result);
-            //     this.setState({aclFile: acl});
-            // }
-        
+        // if(error){
+        //     
+        // }else{
+        //     acl = StorageHelper.downloadFile(result);
+        //     this.setState({aclFile: acl});
+        // }
+
     }
     render() {
         return (
-            <div className=' page-container'>
-                <a className='right_align' href='#' target='_self' onClick={e => this.props.onLogout()}>Log out</a>
-                <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
-                <br />
-                <FilesList
-                    files={this.state.files}
-                    downloadMyFile={this.downloadMyFile}
-                    shareMyFile={this.shareMyFile}
-                    title = 'My uploaded files'
-                    
-                />
-                <SharedFiles
-                    files={this.state.shares}
-                    sharedWithMeMode = {false}
-                    title = 'Files I shared'
-                />
+            <Spin spinning={this.state.actionIsLoading} size='large' className='spinner'>
+                <div className=' page-container'>
+                    <a className='right_align' href='#' target='_self' onClick={e => this.props.onLogout()}>Log out</a>
+                    <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
+                    <br />
+                    <FilesList
+                        files={this.state.files}
+                        downloadMyFile={this.downloadMyFile}
+                        shareMyFile={this.shareMyFile}
+                        title='My uploaded files'
 
-                <SharedFiles
-                    files={this.state.sharedWithMe}
-                    sharedWithMeMode = {true}
-                    title = 'Files shared with me'
-                    downloadFile={this.downloadSharedWithMeFile}
-                />
-                
-                <br />
-                <input type="file" name="file" id="file" className="inputfile" onChange={this.uploadFile} />
-                <label htmlFor="file" className='btn-inline'>Upload</label>
+                    />
+                    <SharedFiles
+                        files={this.state.shares}
+                        sharedWithMeMode={false}
+                        title='Files I shared'
+                    />
 
-                <button className='btn-inline' onClick={e => this.fetchFilesSharedWithMe()}>Fetch files shared with me</button>
-            </div>
+                    <SharedFiles
+                        files={this.state.sharedWithMe}
+                        sharedWithMeMode={true}
+                        title='Files shared with me'
+                        downloadFile={this.downloadSharedWithMeFile}
+                    />
+
+                    <br />
+                    <input type="file" name="file" id="file" className="inputfile" onChange={this.uploadFile} />
+                    <label htmlFor="file" className='btn-inline'>Upload</label>
+
+                    <button className='btn-inline' onClick={e => this.fetchFilesSharedWithMe()}>Fetch files shared with me</button>
+                </div>
+            </Spin>
         );
     }
 }

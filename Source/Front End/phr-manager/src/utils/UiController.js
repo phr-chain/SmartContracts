@@ -2,6 +2,7 @@ import * as StorageHelper from "./StorageHelper";
 import * as EncryptionHelper from "./EncryptionHelper"
 import * as ACLManager from '../utils/ACLManager'
 import * as PHRSmartContractHelper from "./PHRSmartContractHelper"
+import * as CommonHelper from '../utils/CommonHelper'
 
 export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
     var reader = new FileReader();
@@ -95,11 +96,9 @@ export function getMyACLFile(publicKey, privateKey) {
     return new Promise((resolve, reject) => {
         PHRSmartContractHelper.getACLFileAddress(publicKey, (error, myAclRes) => {
             if (error) {
-                debugger;
                 reject(error)
             } else {
-                debugger;
-                if (myAclRes == "") {
+                if (!CommonHelper.isValidString(myAclRes)) {
                     resolve({});
                 } else {
                     StorageHelper.downloadAclFile(myAclRes)
