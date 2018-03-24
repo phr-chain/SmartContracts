@@ -156,11 +156,3 @@ export function test() {
 
     return k1;
 }
-
-export function decrypt(encryptedText, encryptedSymetricKey, privateKey){
-    /**TODO
-     * Decrypt symetric key using private key
-     * Decrypt text using symetric key
-     */
-    return encryptedText;
-}
