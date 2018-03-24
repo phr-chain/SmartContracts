@@ -10,7 +10,6 @@ function convertArrayBuffer2WordArray(arraybuffer) {
     var words = [],
     u8arr = new Uint8Array(arraybuffer),
     len = u8arr.length;
-    console.log("length = " + len);
     for (var i = 0; i < len; i++) {
         words[i >>> 2] |= (u8arr[i] & 0xff) << (24 - (i % 4) * 8);
     }
@@ -119,6 +118,18 @@ export function encryptByPublicKeyAsync(publicKeyBase58, message){
             })
             .catch(err=>reject(err));
     });
+}
+
+export function encryptMessagesByPublicKeyAsync(publicKeyBase58, messages){
+    if (!messages) return Promise.resolve(null);
+    var cipherPromises = messages.map(msg=> encryptByPublicKeyAsync(publicKeyBase58, msg));
+    return Promise.all(cipherPromises);
+}
+
+export function decryptCiphersByPrivateKeyAsync(privateKeyBase58, ciphers){
+    if (!ciphers) return Promise.resolve(null);
+    var messagePromises = ciphers.map(cipher=> decryptByPrivateKeyAsync(privateKeyBase58, cipher));
+    return Promise.all(messagePromises);
 }
 
 export function decryptByPrivateKeyAsync(privateKeyBase58, cipher){
