@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import * as EncryptionHelper from '../utils/EncryptionHelper'
 import * as StorageHelper from '../utils/StorageHelper'
 import * as PHRHelper from '../utils/PHRSmartContractHelper'
-import * as ACLHelper from '../utils/ACLHelper'
+import * as ACLManager from '../utils/ACLManager'
 import * as CommnHelper from '../utils/CommonHelper'
 import * as Test from '../utils/TestData'
 
@@ -14,9 +14,6 @@ import * as UiController from '../utils/UiController'
 
 import saveAs from 'save-as'
 import '../App.css';
-
-const CryptoJS = require("crypto-js");
-
 
 class UserDashBoard extends Component {
 
@@ -50,7 +47,7 @@ class UserDashBoard extends Component {
         //     };
         // })(file);
         // reader.readAsArrayBuffer(file);
-
+        
         UiController.uploadFileToAccount(e.target.files[0],this.props.publicKey,{})
         .then(res=>{
             console.log(res);
@@ -93,51 +90,27 @@ class UserDashBoard extends Component {
         
     }
 
-    myFiles = () => {
-        return ACLHelper.listMyFiles(this.state.aclFile).map(fileData => {
-            var fileName = EncryptionHelper.decrypt(fileData.encryptedFileName, fileData.encryptedSymmetricKey, this.props.privateKey);
-            return Object.assign({}, fileData, { fileName: fileName })
-        });
-    }
-
-    mySharedFiles = () => {
-        var sharedFiles = [];
-        var people = ACLHelper.listPeopleIShareWithThem(this.state.aclFile);
-
-        people.forEach((p) => {
-            var sharePerPerson = ACLHelper.listFilesIShared(this.state.aclFile, p).map(fileData => {
-                var fileInMyAcl = ACLHelper.getMyFileAccess(this.state.aclFile, fileData.fileAddress);
-                var fileName = EncryptionHelper.decrypt(fileInMyAcl.encryptedFileName, fileInMyAcl.encryptedSymmetricKey, this.props.privateKey);
-
-                return Object.assign({}, fileData, { owner: p, fileName: fileName })
-            });
-            sharedFiles = sharedFiles.concat(sharePerPerson);
-        });
-
-        return sharedFiles;
-    }
-    sharedWithMeFiles = () => {
-        var sharedFiles = [];
-        var people = ACLHelper.listPeopleShareWithMe(this.state.aclFile);
-
-        people.forEach((p) => {
-            var sharePerPerson = ACLHelper.listFilesSharedWithMe(this.state.aclFile, p).map(fileData => {
-                var fileName = EncryptionHelper.decrypt(fileData.encryptedFileName, fileData.encryptedSymmetricKey, this.props.privateKey);
-
-                return Object.assign({}, fileData, { owner: p, fileName: fileName })
-            });
-            sharedFiles = sharedFiles.concat(sharePerPerson);
-        });
-        return sharedFiles;
-    }
-
     constructor() {
         super();
         this.state = { aclFile: {}, sharedWithMeAcls: [] };
     }
-    componentWillMount() {
-        this.setState({ aclFile: Test.getTestAclFile() });
 
+    aclUpdated(){
+        this.reloadACL();
+    }
+
+    reloadACL(){
+        ACLManager.readAsync().then((newAclState)=>{
+            // newAclState contains {files, shares, sharedWithMe}
+            this.setState(newAclState);
+        });
+    }
+
+    componentWillMount() {
+        // TODO: init myAclEncJson from IPFS & ETH
+        var myAclEncJson = {}; 
+        ACLManager.init(this.state.publicKey, this.state.privateKey, this.updateACL, myAclEncJson );
+        this.reloadACL();
         //TODO
         // PHRHelper.getMyACLFileAddress((error, result)=>{
         //     if(error){
@@ -155,20 +128,20 @@ class UserDashBoard extends Component {
                 <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
                 <br />
                 <FilesList
-                    files={this.myFiles()}
+                    files={this.files}
                     downloadMyFile={this.downloadMyFile}
                     shareMyFile={this.shareMyFile}
                     title = 'My uploaded files'
                     
                 />
                 <SharedFiles
-                    files={this.mySharedFiles()}
+                    files={this.shares}
                     sharedWithMeMode = {false}
                     title = 'Files I shared'
                 />
 
                 <SharedFiles
-                    files={this.sharedWithMeFiles()}
+                    files={this.sharedWithMe}
                     sharedWithMeMode = {true}
                     title = 'Files shared with me'
                     downloadFile={this.downloadSharedWithMeFile}
