@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import * as antd from "antd"
+import {Spin} from "antd"
+import 'antd/dist/antd.css'
 
 // import * as EncryptionHelper from '../utils/EncryptionHelper'
 // import * as StorageHelper from '../utils/StorageHelper'
@@ -18,12 +19,14 @@ import '../App.css';
 class UserDashBoard extends Component {
 
     uploadFile = (e) => {
-        
+        this.setState({ actionIsLoading: true })
         UiController.uploadFileToAccount(e.target.files[0],this.props.publicKey,{})
         .then(res=>{
             console.log(res);
+            this.setState({ actionIsLoading: false })
         }).catch(err=>{
             console.log(err);
+            this.setState({ actionIsLoading: false })
         });
     }
 
@@ -63,17 +66,21 @@ class UserDashBoard extends Component {
 
     constructor() {
         super();
-        this.state = { aclFile: {}, sharedWithMeAcls: [] };
+        this.state = { actionIsLoading: false , aclFile: {}, sharedWithMeAcls: [] };
     }
 
     reloadACL(){
+        this.setState({ actionIsLoading: true })
         ACLManager.readAsync().then((newAclState)=>{
             this.setState({
                 files: newAclState.files,
                 shares: newAclState.shares,
                 sharedWithMe: newAclState.sharedWithMe,
+                actionIsLoading: false, 
             });
             console.log("ACLManager.getEncryptedACLJson: ", ACLManager.getEncryptedACLJson());
+        }).catch(e => {
+            this.setState({ actionIsLoading: false });
         });
     }
 
@@ -81,11 +88,15 @@ class UserDashBoard extends Component {
         // TODO: init myAclEncJson from IPFS & ETH
         var myAclEncJson = {}; 
         //TODO
+        this.setState({ actionIsLoading: true })
         UiController.getMyACLFile(this.props.publicKey, this.props.privateKey)
         .then(myAclFile=>{ 
             ACLManager.init(this.props.publicKey, this.props.privateKey, this.reloadACL.bind(this), myAclFile );
-
+            this.setState({ actionIsLoading: false })
+        }).catch(e => {
+            this.setState({ actionIsLoading: false });
         });
+
             // if(error){
             //     CommnHelper.notify("Unable to get acl file");
             // }else{
@@ -96,6 +107,7 @@ class UserDashBoard extends Component {
     }
     render() {
         return (
+            <Spin spinning={this.state.actionIsLoading} size='large' className='spinner'>
             <div className=' page-container'>
                 <a className='right_align' href='#' target='_self' onClick={e => this.props.onLogout()}>Log out</a>
                 <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
@@ -126,6 +138,7 @@ class UserDashBoard extends Component {
 
                 <button className='btn-inline' onClick={e => this.fetchFilesSharedWithMe()}>Fetch files shared with me</button>
             </div>
+            </Spin>
         );
     }
 }

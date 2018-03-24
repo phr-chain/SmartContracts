@@ -2,6 +2,7 @@ import * as StorageHelper from "./StorageHelper";
 import * as EncryptionHelper from "./EncryptionHelper"
 import * as ACLManager from '../utils/ACLManager'
 import * as PHRSmartContractHelper from "./PHRSmartContractHelper"
+import * as CommonHelper from '../utils/CommonHelper'
 
 export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
     var reader = new FileReader();
@@ -99,6 +100,9 @@ export function getMyACLFile(publicKey, privateKey){
             reject(error)  
         }
         else{
+            if(!CommonHelper.isValidString(myAclRes))
+                reject("Public key not exist: "+ publicKey);
+            
             StorageHelper.downloadAclFile(myAclRes)
                 .then(aclFileres=>{
                     resolve(aclFileres);
