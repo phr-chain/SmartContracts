@@ -1,12 +1,13 @@
 import * as EncryptionHelper from "./EncryptionHelper";
-var ipfsAPI = require('ipfs-mini');
+var ipfsMiniApi = require('ipfs-mini');
+var ipfsAPI = require('ipfs-api');
 
 
-/*let ipfs = new  ipfsAPI('ipfs.infura.io', '5001', {
+let ipfs = new  ipfsAPI('ipfs.infura.io', '5001', {
     protocol: 'https'
-});*/
+});
 
-let ipfs = new ipfsAPI({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+let ipfsMini = new ipfsMiniApi({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
 
 // expect file content
@@ -58,15 +59,15 @@ export function downloadFile(fileAddress) {
 }
 
 export function uploadAclFile(aclData, accountPublicAddress) {
-
-    //TODO
     return new Promise((resolve, reject) => {
 
         try {
             let encAcl = Object.assign({}, aclData);
             let filesPromis = aclData.acl.files.map((item) => {
+                debugger;
                 return EncryptionHelper.encryptByPublicKeyAsync(accountPublicAddress, JSON.stringify(item))
                  .then(encRes=>{
+                     debugger;
                      return encRes;
                  });
             });
@@ -80,7 +81,7 @@ export function uploadAclFile(aclData, accountPublicAddress) {
                 for (const key in aclData.acl.shares) {
                     if (aclData.acl.shares.hasOwnProperty(key)) {
                         let sharesPromis = aclData.acl.shares[key].map(shItem => {
-                            return EncryptionHelper.encryptByPublicKeyAsync(accountPublicAddress, JSON.stringify(shItem))
+                            return EncryptionHelper.encryptByPublicKeyAsync(key, JSON.stringify(shItem))
                              .then(encSh=>{
                                  return encSh;
                              });
@@ -95,7 +96,9 @@ export function uploadAclFile(aclData, accountPublicAddress) {
                 }
             }
 
-            Promise.all([filesPromis].concat(allSharesPromises)).then(allPromiss=>{
+            let ttt = [filesPromis].concat(allSharesPromises);
+           
+            Promise.all(ttt).then(allPromiss=>{
                 encAcl.acl.files = allPromiss[0];
                 if(allPromiss.length > 1){
                     let counter =1;
@@ -109,7 +112,7 @@ export function uploadAclFile(aclData, accountPublicAddress) {
                 }
 
                 debugger;
-                ipfs.addJSON(encAcl, (jsonUploadError, jsonUploadResult) => {
+                ipfsMini.addJSON(encAcl, (jsonUploadError, jsonUploadResult) => {
                     if (jsonUploadError) {
                         console.log(jsonUploadError);
                         reject(jsonUploadError);

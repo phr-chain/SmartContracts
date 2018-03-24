@@ -25,6 +25,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                 StorageHelper.uploadFile(cipher)
                     .then((fileHash) => {
                         // add file access
+                        debugger;
                         let fileAccess = {
                             fileAddress: fileHash,
                             symmetricKey: genSymmetricKey,
