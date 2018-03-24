@@ -3,6 +3,7 @@ import * as EncryptionHelper from "./EncryptionHelper"
 import * as ACLManager from '../utils/ACLManager'
 import * as PHRSmartContractHelper from "./PHRSmartContractHelper"
 import saveAs from 'save-as'
+import * as CommonHelper from '../utils/CommonHelper'
 
 /**
  * Download file from IPFS, decrypt it, and save the disk
@@ -46,7 +47,7 @@ export function uploadFileToAccount(file, accountPublicAddress) {
                 StorageHelper.uploadFile(cipher)
                     .then((fileHash) => {
                         // add file access
-                        
+
                         let fileAccess = {
                             fileAddress: fileHash,
                             symmetricKey: genSymmetricKey,
@@ -54,44 +55,44 @@ export function uploadFileToAccount(file, accountPublicAddress) {
                             size: fileLength,
                             mimeType: fileType
                         };
-                        console.log("Current fileAccess: "+JSON.stringify(fileAccess));
-                        
+                        console.log("Current fileAccess: " + JSON.stringify(fileAccess));
+
                         ACLManager.addNewFileAccessAsync(fileAccess)
-                        .then(()=>{
-                            var accessFile = ACLManager.getEncryptedACLJson();
-                            console.log("Updated  ACL: "+JSON.stringify(accessFile));
-                       
-                            // store ACL in ipfs(encryption included) 
-                            
-                            
-                            StorageHelper.uploadAclFile(accessFile, accountPublicAddress)
-                                .then((aclHash) => {
-                                    
-                                    PHRSmartContractHelper.setACLFileAddress(aclHash, (smartContractError, smartContractResult) => {
-                                      
-                                        if (smartContractError) {
-                                            console.log(smartContractError);
-                                            reject(smartContractError);
-                                        } else {
-    
-                                            
-                                            let uploadResult = {
-                                                accessFile,
-                                                fileHash,
-                                                aclHash
-    
-                                            };
-    
-                                            console.log(JSON.stringify(uploadResult));
-                                            resolve(uploadResult);
-                                        }
+                            .then(() => {
+                                var accessFile = ACLManager.getEncryptedACLJson();
+                                console.log("Updated  ACL: " + JSON.stringify(accessFile));
+
+                                // store ACL in ipfs(encryption included) 
+
+
+                                StorageHelper.uploadAclFile(accessFile, accountPublicAddress)
+                                    .then((aclHash) => {
+
+                                        PHRSmartContractHelper.setACLFileAddress(accountPublicAddress, aclHash, (smartContractError, smartContractResult) => {
+
+                                            if (smartContractError) {
+                                                console.log(smartContractError);
+                                                reject(smartContractError);
+                                            } else {
+
+
+                                                let uploadResult = {
+                                                    accessFile,
+                                                    fileHash,
+                                                    aclHash
+
+                                                };
+
+                                                console.log(JSON.stringify(uploadResult));
+                                                resolve(uploadResult);
+                                            }
+                                        })
                                     })
-                                })
-                                .catch((aclStoreError) => {
-                                    console.log(aclStoreError);
-                                    reject(aclStoreError);
-                                }); 
-                        });
+                                    .catch((aclStoreError) => {
+                                        console.log(aclStoreError);
+                                        reject(aclStoreError);
+                                    });
+                            });
 
                     })
                     .catch((uploadErr) => {
@@ -110,24 +111,30 @@ export function uploadFileToAccount(file, accountPublicAddress) {
         }
         reader.readAsArrayBuffer(file);
     });
- 
+
 }
 
 
-export function getMyACLFile(publicKey, privateKey){
- return new Promise((resolve, reject) => {
-    PHRSmartContractHelper.getMyACLFileAddress((error, myAclRes)=>{
-        if(error){
-            debugger;
-            reject(error)  
-        }
-        else{
-            StorageHelper.downloadAclFile(myAclRes)
-                .then(aclFileres=>{
-                    resolve(aclFileres);
-                });
-            
-        }
-    })
- });
+export function getMyACLFile(publicKey, privateKey) {
+    return new Promise((resolve, reject) => {
+        PHRSmartContractHelper.getACLFileAddress(publicKey, (error, myAclRes) => {
+            if (error) {
+                reject(error)
+            } else {
+                if (!CommonHelper.isValidString(myAclRes)) {
+                    resolve({});
+                } else {
+                    StorageHelper.downloadAclFile(myAclRes)
+                        .then(aclFileres => {
+                            resolve(aclFileres);
+                        });
+                }
+
+            }
+        })
+    });
+}
+
+export function shareFileWithAccount(fileData, recieverPublicKey) {
+
 }

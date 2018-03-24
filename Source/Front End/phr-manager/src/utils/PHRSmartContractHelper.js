@@ -1,20 +1,84 @@
 import * as EthHelper from './EtherumHelper'
 
-var abi = [{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":false,"name":"fileOwner","type":"address"},{"indexed":false,"name":"fileAddress","type":"string"}],"name":"FileAdded","type":"event"},{"constant":false,"inputs":[{"name":"_fileAddress","type":"string"}],"name":"setACLFileAddress","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"_fileOwner","type":"address"}],"name":"getACLFileAddress","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getMyACLFileAddress","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}]
-var address = '0x740b1232ebe21e63d471e58c18a769be87815d87';
+var abi = [
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_fileOwner",
+				"type": "string"
+			},
+			{
+				"name": "_fileAddress",
+				"type": "string"
+			}
+		],
+		"name": "setACLFileAddress",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_fileOwner",
+				"type": "string"
+			}
+		],
+		"name": "getACLFileAddress",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "fileOwner",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "fileAddress",
+				"type": "string"
+			}
+		],
+		"name": "FileAdded",
+		"type": "event"
+	}
+]
+var address = '0x4ef830aa64a886f3923c286abda4fe481ba35431';
 
 var phrContract = EthHelper.getContract(abi, address);
 
 
-export function setACLFileAddress(fileAddress, callBack) {
-  var fees = window.web3.toWei(0.06, 'ether');
-  phrContract.setACLFileAddress(fileAddress, { value: fees, gas: 500000 }, callBack);
+export function setACLFileAddress(fileOwner, fileAddress, callBack) {
+  var fees = window.web3.toWei(0.001, 'ether');
+  phrContract.setACLFileAddress(fileOwner, fileAddress, { value: fees, gas: 500000 }, callBack);
 }
 
 export function getACLFileAddress(fileOwner, callBack) {
   phrContract.getACLFileAddress(fileOwner, callBack);
 }
 
-export function getMyACLFileAddress(callBack) {
-  phrContract.getMyACLFileAddress(callBack);
-}
+

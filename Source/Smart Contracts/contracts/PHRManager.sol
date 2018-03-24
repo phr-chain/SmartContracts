@@ -2,36 +2,32 @@ pragma solidity ^0.4.17;
 
 contract PHRManager {
     
-    event FileAdded(address fileOwner, string fileAddress); 
+    event FileAdded(string fileOwner, string fileAddress); 
     
 
     address  contractOwner; 
-    mapping(address => string) acls; //[UserPub: his ACL]
+    mapping(string => string) acls; //[UserPub: his ACL]
     
     function PHRManager() public {
         contractOwner = msg.sender;
     }
     
-    function setACLFileAddress( string _fileAddress) public payable {
-        uint fees = 0.05 ether;
-        require(msg.value > fees);
+    function setACLFileAddress(string _fileOwner, string _fileAddress) public payable {
+        uint fees = 0.001 ether;
+        require(msg.value >= fees);
             
-        acls[msg.sender] = _fileAddress;
+        acls[_fileOwner] = _fileAddress;
         
         contractOwner.transfer(fees);
         if (msg.value > fees)
             msg.sender.transfer(msg.value - fees);
 
-        FileAdded(msg.sender,  _fileAddress);            
+        FileAdded(_fileOwner,  _fileAddress);            
     }
 
-    function getACLFileAddress(address _fileOwner) public view returns(string) {
+    function getACLFileAddress(string _fileOwner) public view returns(string) {
         return acls[_fileOwner];
     }
-    function getMyACLFileAddress() public view returns(string) {
-        return acls[msg.sender];
-    }
-
     function() public payable {
         //Change this action latter
         contractOwner.transfer(msg.value);
