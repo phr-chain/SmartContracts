@@ -95,12 +95,14 @@ class UserDashBoard extends Component {
     }
 
     reloadACL(){
-        ACLManager.readAsync().then((newAclState)=>
-        this.setState({
-            files: newAclState.files,
-            shares: newAclState.shares,
-            sharedWithMe: newAclState.sharedWithMe,
-        }));
+        ACLManager.readAsync().then((newAclState)=>{
+            this.setState({
+                files: newAclState.files,
+                shares: newAclState.shares,
+                sharedWithMe: newAclState.sharedWithMe,
+            });
+            console.log("ACLManager.getEncryptedACLJson: ", ACLManager.getEncryptedACLJson());
+        });
     }
 
     componentWillMount() {

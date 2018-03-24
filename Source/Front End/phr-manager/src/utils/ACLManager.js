@@ -98,3 +98,7 @@ export function addNewFileAccessAsync(plainFileAccess, toAddressBase58){
             onUpdate();
         });
 }
+
+export function getEncryptedACLJson(){
+    return encJson;
+}
