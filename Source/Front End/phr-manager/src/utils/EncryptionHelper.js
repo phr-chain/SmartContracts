@@ -55,7 +55,8 @@ function ecKeyToBase58KeyPair(keyPair){
 }
 
 export function generateSharedKey(){
-    return crypto.randomBytes(32);
+    //return crypto.randomBytes(32);
+    return "todomessage";
 }
 
 export function encrypt(arrayBuffer, symmetricKey){

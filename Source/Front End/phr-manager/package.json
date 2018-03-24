@@ -10,6 +10,7 @@
     "elliptic-curve": "^0.1.0",
     "eslint": "^4.19.0",
     "ipfs-api": "^18.2.0",
+    "ipfs-mini": "^1.1.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1",

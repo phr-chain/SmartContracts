@@ -35,7 +35,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                         console.log("Current fileAccess: "+JSON.stringify(fileAccess));
                         
                         ACLHelper.addFileAccess(currentACL, accountPublicAddress, fileAccess);
-                        console.log("Current ACL: "+JSON.stringify(currentACL));
+                        console.log("Updated  ACL: "+JSON.stringify(currentACL));
                        
                         // store ACL in ipfs(encryption included) 
                         StorageHelper.uploadAclFile(currentACL, accountPublicAddress)
@@ -77,7 +77,8 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
         } catch (error) {
             reject(error);
         }
+        reader.readAsArrayBuffer(file);
     });
 
-    reader.readAsArrayBuffer(file);
+  
 }

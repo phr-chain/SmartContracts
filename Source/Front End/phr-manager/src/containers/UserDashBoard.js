@@ -9,6 +9,7 @@ import * as Test from '../utils/TestData'
 
 import FilesList from '../components/FilesList'
 import SharedFiles from '../components/SharedFiles'
+import * as UiController from '../utils/UiController'
 
 
 import saveAs from 'save-as'
@@ -49,6 +50,13 @@ class UserDashBoard extends Component {
         //     };
         // })(file);
         // reader.readAsArrayBuffer(file);
+
+        UiController.uploadFileToAccount(e.target.files[0],this.props.publicKey,{})
+        .then(res=>{
+            console.log(res);
+        }).catch(err=>{
+            console.log(err);
+        });
     }
 
     downloadMyFile(fileData) {
