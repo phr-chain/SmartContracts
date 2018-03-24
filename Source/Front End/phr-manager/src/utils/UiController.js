@@ -87,6 +87,24 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
         }
         reader.readAsArrayBuffer(file);
     });
+ 
+}
 
-  
+
+export function getMyACLFile(publicKey, privateKey){
+ return new Promise((resolve, reject) => {
+    PHRSmartContractHelper.getMyACLFileAddress((error, myAclRes)=>{
+        if(error){
+            debugger;
+            reject(error)  
+        }
+        else{
+            StorageHelper.downloadAclFile(myAclRes)
+                .then(aclFileres=>{
+                    resolve(aclFileres);
+                });
+            
+        }
+    })
+ });
 }

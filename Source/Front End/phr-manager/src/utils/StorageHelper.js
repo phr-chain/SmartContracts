@@ -129,3 +129,16 @@ export function uploadAclFile(aclData, accountPublicAddress) {
 
     });
 }
+
+export function downloadAclFile(fileAddress){
+    return new Promise((resolve, reject) => {
+        ipfsMini.catJSON(fileAddress,(err, fileRes)=>{
+        if(err){
+            reject(err);
+        }
+        else{
+            resolve(fileRes);
+        }
+        });
+    });
+}
