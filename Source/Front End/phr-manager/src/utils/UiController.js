@@ -93,7 +93,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
 
 export function getMyACLFile(publicKey, privateKey){
  return new Promise((resolve, reject) => {
-    PHRSmartContractHelper.getMyACLFileAddress((error, myAclRes)=>{
+    PHRSmartContractHelper.getACLFileAddress(publicKey,(error, myAclRes)=>{
         if(error){
             debugger;
             reject(error)  
