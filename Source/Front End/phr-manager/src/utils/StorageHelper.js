@@ -62,7 +62,7 @@ export function uploadAclFile(aclData, accountPublicAddress) {
     return new Promise((resolve, reject) => {
 
         try {
-            let encAcl = Object.assign({}, aclData);
+          /*let encAcl = Object.assign({}, aclData);
             let filesPromis = aclData.acl.files.map((item) => {
                 debugger;
                 return EncryptionHelper.encryptByPublicKeyAsync(accountPublicAddress, JSON.stringify(item))
@@ -70,13 +70,13 @@ export function uploadAclFile(aclData, accountPublicAddress) {
                      debugger;
                      return encRes;
                  });
-            });
+            });*/
 
            /* Promise.all(filesPromis).then(filesAllProRes=>{
                 encAcl.acl.files = filesAllProRes;
             })*/
 
-            let allSharesPromises = [];
+          /*  let allSharesPromises = [];
             if (aclData.acl.shares) {
                 for (const key in aclData.acl.shares) {
                     if (aclData.acl.shares.hasOwnProperty(key)) {
@@ -87,16 +87,16 @@ export function uploadAclFile(aclData, accountPublicAddress) {
                              });
                         });
 
-                        allSharesPromises.push(sharesPromis);
+                        allSharesPromises.push(sharesPromis);*/
 
                        /* Promise.all(sharesPromis).then(sharesAllRes=>{
                             encAcl.acl.shares[key] = sharesAllRes;
                         })*/
-                    }
-                }
-            }
+                //    }
+             //   }
+          //  }
 
-            let ttt = [filesPromis].concat(allSharesPromises);
+          /*  let ttt = [filesPromis].concat(allSharesPromises);
            
             Promise.all(ttt).then(allPromiss=>{
                 encAcl.acl.files = allPromiss[0];
@@ -109,10 +109,9 @@ export function uploadAclFile(aclData, accountPublicAddress) {
                         }
                     }
 
-                }
+                }*/
 
-                debugger;
-                ipfsMini.addJSON(encAcl, (jsonUploadError, jsonUploadResult) => {
+                ipfsMini.addJSON(aclData, (jsonUploadError, jsonUploadResult) => {
                     if (jsonUploadError) {
                         console.log(jsonUploadError);
                         reject(jsonUploadError);
@@ -121,7 +120,7 @@ export function uploadAclFile(aclData, accountPublicAddress) {
                         resolve(jsonUploadResult);
                     }
                 });
-            });         
+                     
 
             //  resolve(0xf76a1c8cf287ea3fbcf330c03b92681fc41a4363)
         } catch (error) {

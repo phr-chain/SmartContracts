@@ -10,6 +10,7 @@ export function init(myPubAddressBase58, myPrivAddressBase58, onUpdateCallback, 
     if(!onUpdate){
         console.error("ACLManager: Missing onUpdateCallback");
     }
+    
     encJson = myAclEncJson || {};
     encJson.acl = encJson.acl || {};
     encJson.acl.files = encJson.acl.files || [];
@@ -80,16 +81,21 @@ export function readAsync(){
 
 function unlockFileAsync(encFileAccess){
     return new Promise(function(resolve, reject){
+        
         var plainFileAccess = Object.assign({}, encFileAccess);
-        EncryptionHelper.decryptCiphersByPrivateKeyAsync(privAddressBase58, encFileAccess.lock)
+        EncryptionHelper.decryptByPrivateKeyAsync(privAddressBase58, encFileAccess.lock)
             .then(unlock=>{
+                
+                unlock = JSON.parse(unlock.toString())
                 plainFileAccess = Object.assign(plainFileAccess, unlock);
+                delete plainFileAccess.lock;
                 resolve(plainFileAccess);
             })
     });
 }
 
 function unlockFilesAsync(encFilesAccess){
+    
     return Promise.all(encFilesAccess.map(unlockFileAsync));
 }
 
@@ -107,8 +113,10 @@ function lockFileAsync(plainFileAccess, toAddress, fromAddress){
 export function addNewFileAccessAsync(plainFileAccess, toAddressBase58){
     var fromAddress = pubAddressBase58;
     var toAddress = toAddressBase58 || pubAddressBase58;
+    
     return lockFileAsync(plainFileAccess, toAddress, fromAddress)
         .then(encFileAccess=>{
+            
             encJson.acl.files.push(encFileAccess);
             onUpdate();
         });

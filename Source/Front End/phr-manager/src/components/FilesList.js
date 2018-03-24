@@ -18,7 +18,7 @@ class FilesList extends Component {
                                     <tr key={i}>
                                         <td>
                                             {/* {EncryptionHelper.decrypt(file.encryptedFileName, file.encryptedSymmetricKey, this.props.privateKey)} */}
-                                            {JSON.stringify(file)}
+                                            {file.fileName}
                                             <button className='btn-inline right_align' onClick={e => this.props.downloadMyFile(file)}> Download</button>
                                             <button className='btn-inline right_align' onClick={e => this.props.shareMyFile(file)}> Share</button>
                                         </td>

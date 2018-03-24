@@ -23,7 +23,7 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                 StorageHelper.uploadFile(cipher)
                     .then((fileHash) => {
                         // add file access
-                        debugger;
+                        
                         let fileAccess = {
                             fileAddress: fileHash,
                             symmetricKey: genSymmetricKey,
@@ -33,34 +33,43 @@ export function uploadFileToAccount(file, accountPublicAddress, currentACL) {
                         };
                         console.log("Current fileAccess: "+JSON.stringify(fileAccess));
                         
-                        ACLManager.addNewFileAccessAsync(fileAccess);
-                        console.log("Updated  ACL: "+JSON.stringify(currentACL));
+                        ACLManager.addNewFileAccessAsync(fileAccess)
+                        .then(()=>{
+                            var accessFile = ACLManager.getEncryptedACLJson();
+                            console.log("Updated  ACL: "+JSON.stringify(accessFile));
                        
-                        // store ACL in ipfs(encryption included) 
-                        StorageHelper.uploadAclFile(currentACL, accountPublicAddress)
-                            .then((aclHash) => {
-                                PHRSmartContractHelper.setACLFileAddress(aclHash, (smartContractError, smartContractResult) => {
-                                    if (smartContractError) {
-                                        console.log(smartContractError);
-                                        reject(smartContractError);
-                                    } else {
-
-                                        let uploadResult = {
-                                            currentACL,
-                                            fileHash,
-                                            aclHash
-
-                                        };
-
-                                        console.log(JSON.stringify(uploadResult));
-                                        resolve(uploadResult);
-                                    }
+                            // store ACL in ipfs(encryption included) 
+                            
+                            
+                            StorageHelper.uploadAclFile(accessFile, accountPublicAddress)
+                                .then((aclHash) => {
+                                    
+                                    PHRSmartContractHelper.setACLFileAddress(aclHash, (smartContractError, smartContractResult) => {
+                                      
+                                        if (smartContractError) {
+                                            console.log(smartContractError);
+                                            reject(smartContractError);
+                                        } else {
+    
+                                            
+                                            let uploadResult = {
+                                                accessFile,
+                                                fileHash,
+                                                aclHash
+    
+                                            };
+    
+                                            console.log(JSON.stringify(uploadResult));
+                                            resolve(uploadResult);
+                                        }
+                                    })
                                 })
-                            })
-                            .catch((aclStoreError) => {
-                                console.log(aclStoreError);
-                                reject(aclStoreError);
-                            });
+                                .catch((aclStoreError) => {
+                                    console.log(aclStoreError);
+                                    reject(aclStoreError);
+                                }); 
+                        });
+
                     })
                     .catch((uploadErr) => {
                         console.log(uploadErr);
