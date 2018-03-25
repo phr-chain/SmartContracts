@@ -1,6 +1,7 @@
 import * as StorageHelper from "./StorageHelper";
 import * as EncryptionHelper from "./EncryptionHelper"
 import * as ACLManager from '../utils/ACLManager'
+import * as ACLHelper from '../utils/ACLHelper'
 import * as PHRSmartContractHelper from "./PHRSmartContractHelper"
 import saveAs from 'save-as'
 import * as CommonHelper from '../utils/CommonHelper'
@@ -135,6 +136,50 @@ export function getMyACLFile(publicKey, privateKey) {
     });
 }
 
-export function shareFileWithAccount(fileData, recieverPublicKey) {
+export function shareFileWithAccount(fileData, recieverPublicKey,ownerPublicAddress) {
+
+    return new Promise((resolve, reject) => {
+        try {
+           ACLManager.addNewFileAccessAsync(fileData,recieverPublicKey)
+           .then((newFileAccess)=>{
+               
+            var accessFile = ACLManager.getEncryptedACLJson();
+            console.log("Updated  ACL: " + JSON.stringify(accessFile));
+
+            // store ACL in ipfs(encryption included) 
+
+
+            StorageHelper.uploadAclFile(accessFile, ownerPublicAddress)
+                .then((aclHash) => {
+
+                    PHRSmartContractHelper.setACLFileAddress(ownerPublicAddress, aclHash, (smartContractError, smartContractResult) => {
+
+                        if (smartContractError) {
+                            console.log(smartContractError);
+                            reject(smartContractError);
+                        } else {
+
+
+                            let uploadResult = {
+                                accessFile,
+                                aclHash
+
+                            };
+
+                            console.log(JSON.stringify(uploadResult));
+                            resolve(uploadResult);
+                        }
+                    })
+                })
+                .catch((aclStoreError) => {
+                    console.log(aclStoreError);
+                    reject(aclStoreError);
+                });
+
+           }).catch(err=>reject(err)); 
+        } catch (error) {
+           reject(error); 
+        }
+    });
 
 }

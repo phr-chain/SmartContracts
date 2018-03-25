@@ -8,6 +8,7 @@ class SharedFiles extends Component {
     render() {
         const hasFiles = this.props.files;
         if (hasFiles){
+            let myFileCopy = this.props.myFiles;
             return (
                 <table className='inline_dislay'>
                     <tbody>
@@ -17,18 +18,16 @@ class SharedFiles extends Component {
                             <th>{this.props.sharedWithMeMode ? 'Shared by' : 'Shared to'}</th>
                         </tr>
                         {
+                            
                             this.props.files.map((file, i) => {
                                 return (
                                     <tr key={i}>
                                         <td>
-                                            {JSON.stringify(file)}
-                                        </td>
-                                        <td>
-                                            {file.fileName}
+                                            {myFileCopy.find(f=>{return f.fileAddress == file.fileAddress}).fileName}
                                             {this.renderDownload(file)}
                                         </td>
                                         <td>
-                                            {file.owner}
+                                            {file.toAddress}
                                         </td>
                                     </tr>)
                             })
