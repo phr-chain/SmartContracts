@@ -36,11 +36,12 @@ class UserDashBoard extends Component {
             .then(console.log)
             .catch(console.error);
     }
+
     shareMyFile(fileData) {
         //TODO
         var recieverPublicKey = prompt("Please enter reciever public key");
         if (CommnHelper.isValidString(recieverPublicKey)) {
-            UiController.shareFileWithAccount(fileData, recieverPublicKey)
+            UiController.shareFileWithAccount(fileData, recieverPublicKey, this.props.publicKey)
                 .then(res => {
                     console.log(res);
                     CommnHelper.notify("Share Done");
@@ -74,6 +75,8 @@ class UserDashBoard extends Component {
     constructor() {
         super();
         this.state = { actionIsLoading: false, aclFile: {}, sharedWithMeAcls: [] };
+
+       this.shareMyFile =  this.shareMyFile.bind(this);
     }
 
     reloadACL() {
@@ -127,6 +130,7 @@ class UserDashBoard extends Component {
 
                     />
                     <SharedFiles
+                        myFiles={this.state.files}
                         files={this.state.shares}
                         sharedWithMeMode={false}
                         title='Files I shared'
