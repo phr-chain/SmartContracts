@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Spin } from "antd"
+import { Spin, Row, Col } from "antd"
 import 'antd/dist/antd.css'
 
 // import * as EncryptionHelper from '../utils/EncryptionHelper'
@@ -58,7 +58,7 @@ class UserDashBoard extends Component {
 
     fetchFilesSharedWithMe() {
         //TODO
-        var recieverublicKey = prompt("Please enter BLOCKCHAIN public key of the user who shares files with you");
+        var recieverublicKey = prompt("Please enter public key of the user who shares files with you");
         if (CommnHelper.isValidString(recieverublicKey)) {
             alert(recieverublicKey)
             /* 
@@ -104,46 +104,59 @@ class UserDashBoard extends Component {
                 this.setState({ actionIsLoading: false });
             });
 
-        // if(error){
-        //     
-        // }else{
-        //     acl = StorageHelper.downloadFile(result);
-        //     this.setState({aclFile: acl});
-        // }
-
     }
     render() {
         return (
             <Spin spinning={this.state.actionIsLoading} size='large' className='spinner'>
                 <div className=' page-container'>
-                    <a className='right_align' href='#' target='_self' onClick={e => this.props.onLogout()}>Log out</a>
-                    <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
-                    <br />
-                    <FilesList
-                        files={this.state.files}
-                        downloadMyFile={this.downloadMyFile}
-                        shareMyFile={this.shareMyFile}
-                        title='My uploaded files'
+                    <Row>
+                        <a className='right_align' href='#' target='_self' onClick={e => this.props.onLogout()}>Log out</a>
+                        <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
+                    </Row>
 
-                    />
-                    <SharedFiles
-                        files={this.state.shares}
-                        sharedWithMeMode={false}
-                        title='Files I shared'
-                    />
+                    <Row>
+                        <Col span={3}>
+                            <div class="upload-btn-wrapper">
+                                <button className="btn">Upload a file</button>
+                                <input type="file" name="myfile" className='xx' />
+                            </div>
+                        </Col>
 
-                    <SharedFiles
-                        files={this.state.sharedWithMe}
-                        sharedWithMeMode={true}
-                        title='Files shared with me'
-                        downloadFile={this.downloadSharedWithMeFile}
-                    />
+                        <Col span={6}>
+                            <button className='btn' onClick={e => this.fetchFilesSharedWithMe()}>Fetch files shared with me</button>
+                        </Col>
+                        <Col span={15} />
+                    </Row>
 
                     <br />
-                    <input type="file" name="file" id="file" className="inputfile" onChange={this.uploadFile} />
-                    <label htmlFor="file" className='btn-inline'>Upload</label>
+                    <Row>
+                        <Col span={8}>
+                            <FilesList
+                                files={this.state.files}
+                                downloadMyFile={this.downloadMyFile}
+                                shareMyFile={this.shareMyFile}
+                                title='My uploaded files'
 
-                    <button className='btn-inline' onClick={e => this.fetchFilesSharedWithMe()}>Fetch files shared with me</button>
+                            />
+                        </Col>
+
+                        <Col span={8}>
+                            {/* <SharedFiles
+                                files={this.state.shares}
+                                sharedWithMeMode={false}
+                                title='Files I shared'
+                            /> */}
+                        </Col>
+
+                        <Col span={8}>
+                            <SharedFiles
+                                files={this.state.sharedWithMe}
+                                sharedWithMeMode={true}
+                                title='Files shared with me'
+                                downloadFile={this.downloadSharedWithMeFile}
+                            />
+                        </Col>
+                    </Row>
                 </div>
             </Spin>
         );

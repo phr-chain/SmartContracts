@@ -11,7 +11,7 @@ class SharedFiles extends Component {
             return (
                 <table className='inline_dislay'>
                     <tbody>
-                        <tr><h3>{this.props.title}:</h3></tr>
+                        <tr className='center-text'><h2>{this.props.title}:</h2></tr>
                         <tr>
                             <th>File name</th>
                             <th>{this.props.sharedWithMeMode ? 'Shared by' : 'Shared to'}</th>
