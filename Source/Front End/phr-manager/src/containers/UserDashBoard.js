@@ -36,11 +36,12 @@ class UserDashBoard extends Component {
             .then(console.log)
             .catch(console.error);
     }
+
     shareMyFile(fileData) {
         //TODO
         var recieverPublicKey = prompt("Please enter reciever public key");
         if (CommnHelper.isValidString(recieverPublicKey)) {
-            UiController.shareFileWithAccount(fileData, recieverPublicKey)
+            UiController.shareFileWithAccount(fileData, recieverPublicKey, this.props.publicKey)
                 .then(res => {
                     console.log(res);
                     CommnHelper.notify("Share Done");
@@ -74,6 +75,8 @@ class UserDashBoard extends Component {
     constructor() {
         super();
         this.state = { actionIsLoading: false, aclFile: {}, sharedWithMeAcls: [] };
+
+        this.shareMyFile = this.shareMyFile.bind(this);
     }
 
     reloadACL() {
@@ -112,11 +115,12 @@ class UserDashBoard extends Component {
                     <Row>
                         <a className='right_align' href='#' target='_self' onClick={e => this.props.onLogout()}>Log out</a>
                         <div className='right_align'> {this.props.publicKey} &nbsp;&nbsp;</div>
+                        <br />
                     </Row>
 
                     <Row>
                         <Col span={3}>
-                            <div class="upload-btn-wrapper">
+                            <div className="upload-btn-wrapper">
                                 <button className="btn">Upload a file</button>
                                 <input type="file" name="myfile" className='xx' />
                             </div>
@@ -141,24 +145,24 @@ class UserDashBoard extends Component {
                         </Col>
 
                         <Col span={8}>
-                            {/* <SharedFiles
+                            <SharedFiles
+                                myFiles={this.state.files}
                                 files={this.state.shares}
                                 sharedWithMeMode={false}
                                 title='Files I shared'
-                            /> */}
-                        </Col>
-
-                        <Col span={8}>
-                            <SharedFiles
-                                files={this.state.sharedWithMe}
-                                sharedWithMeMode={true}
-                                title='Files shared with me'
-                                downloadFile={this.downloadSharedWithMeFile}
                             />
+                        </Col>
+                        <Col span={8}>
+                        <SharedFiles
+                            files={this.state.sharedWithMe}
+                            sharedWithMeMode={true}
+                            title='Files shared with me'
+                            downloadFile={this.downloadSharedWithMeFile}
+                        />
                         </Col>
                     </Row>
                 </div>
-            </Spin>
+            </Spin >
         );
     }
 }
